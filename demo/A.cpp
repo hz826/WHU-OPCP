@@ -16,7 +16,7 @@ class Solution {
     }
 
     void next_step() {
-        if (Role!=1 || StepID) {
+        if (Role!=0 || StepID) {
             int x, y;
             scanf("%d%d", &x, &y);
             board[x][y] = 2;
