@@ -16,7 +16,9 @@ FILE *details, *score;
 
 class Player;
 vector<Player> players;
-int player_cnt = 0;
+int player_now;
+
+void alarm_handler(int);
 
 class Player {
     public:
@@ -24,6 +26,7 @@ class Player {
     string compile_cmd, run_cmd, fifo_in, fifo_out;
     int fd_in, fd_out, pid;
     FILE *fp_in, *fp_out;
+    static int player_cnt;
 
     Player(string compile_cmd, string run_cmd, string fifo_in, string fifo_out) 
         : compile_cmd(compile_cmd), run_cmd(run_cmd), fifo_in(fifo_in), fifo_out(fifo_out) {
@@ -39,8 +42,6 @@ class Player {
     }
 
     void clean() {
-        free(fp_in);  free(fp_out);
-        close(fd_in);  close(fd_out);
         unlink(fifo_in.c_str());
         unlink(fifo_out.c_str());
         signal_kill();
@@ -61,11 +62,19 @@ class Player {
     }
 
     void setTimeout(int T, bool resetTimer) {
-        
+        player_now = player_id;
+        struct itimerval tick;
+        memset(&tick, 0, sizeof(tick));
+        tick.it_value.tv_sec = T / 1000;
+        tick.it_value.tv_usec = T % 1000;
+        if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("set timer failed!!/n");  exit(1); }
     }
 
     void checkTimeout() {
-
+        struct itimerval tick;
+        memset(&tick, 0, sizeof(tick));
+        if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("reset timer failed!!/n");  exit(1); }
+        player_now = -1;
     }
 
     void signal_stop() {
@@ -95,8 +104,10 @@ class Player {
     void _log(Args... args) {
         fprintf(details, "%c: ", 'A'+player_id);
         fprintf(details, args...);
+        fflush(details);
     }
 };
+int Player::player_cnt = 0;
 
 void endgame(int winner) {
     if (winner == -1) {
@@ -111,6 +122,12 @@ void endgame(int winner) {
     for (auto &p : players) fprintf(score, "%c: %d\n", 'A'+p.player_id, p.score);
     for (auto &p : players) p.clean();
     exit(0);
+}
+
+void alarm_handler(int) {
+    if (player_now < 0) { printf("alarm error/n");  exit(1); }
+    players[player_now]._log("%s", "time limit exceeded\n");
+    endgame(player_now^1);
 }
 
 char board[3][3];
@@ -142,19 +159,13 @@ void add(int turn, int x, int y) {
     if (!counter) endgame(-1);
 };
 
-void alarm_handler(int) {
-    // puts("alarm!");
-    alarm(1);
-}
-
 int main(int argc, char *argv[]) {
+    signal(SIGALRM, alarm_handler);
+
     details = fopen("details.txt", "w");
     score = fopen("score.txt", "w");
     // details = (FILE*) stdout;
-    // score = (FILE*) stdout;
-
-    signal(SIGALRM, alarm_handler);
-    alarm(1);
+    // score = (FILE*) stdout;  // for debug
 
     players.push_back(Player("g++ A.cpp -o A", "./A", "fifo_CA", "fifo_AC"));
     players.push_back(Player("g++ B.cpp -o B", "./B", "fifo_CB", "fifo_BC"));
@@ -166,7 +177,7 @@ int main(int argc, char *argv[]) {
 
     int x, y;
     memset(board, -1, sizeof(board));
-    const int T1 = 1000, T2 = 100;
+    const int T1 = 1000, T2 = 1000;
 
     Alice.run();
     Alice.setTimeout(T1+T2, false);
