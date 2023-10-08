@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#include <unistd.h>
 using namespace std;
 
 class Solution {
@@ -16,7 +17,7 @@ class Solution {
     }
 
     void next_step() {
-        // for (int i=0;i<=1e9;i++) ;
+        for (int i=0;i<=1e9;i++) ;
 
         if (Role!=0 || StepID) {
             int x, y;

@@ -23,14 +23,17 @@ void alarm_handler(int);
 class Player {
     public:
     int player_id, score;
-    string compile_cmd, run_cmd, fifo_in, fifo_out;
+    string compile_cmd, run_cmd, fifo_in, fifo_out, pid_file;
     int fd_in, fd_out, pid;
     FILE *fp_in, *fp_out;
     static int player_cnt;
 
-    Player(string compile_cmd, string run_cmd, string fifo_in, string fifo_out) 
-        : compile_cmd(compile_cmd), run_cmd(run_cmd), fifo_in(fifo_in), fifo_out(fifo_out) {
+    Player(string compile_cmd, string run_cmd) 
+        : compile_cmd(compile_cmd), run_cmd(run_cmd) {
             player_id = player_cnt++;
+            fifo_in = string("fifo_in_") + char('A'+player_id);
+            fifo_out = string("fifo_out_") + char('A'+player_id);
+            pid_file = string("pid_") + char('A'+player_id);
         }
 
     void init() {
@@ -48,17 +51,30 @@ class Player {
     }
 
     void run() {
-        pid = fork();
-        if (pid < 0) { printf("cannot fork\n");  exit(1); }
-        if (pid == 0) {
-            system((run_cmd + "<" + fifo_in + ">" + fifo_out).c_str());
-            exit(0);
-        }
+        system((run_cmd + " < " + fifo_in + " > " + fifo_out + "& echo $! > " + pid_file).c_str());
+        FILE *fp = fopen(pid_file.c_str(), "r");
+        fscanf(fp, "%d", &pid);
+        fclose(fp);
+        _log("pid = %d\n", pid);
+
         if ((fd_in = open(fifo_in.c_str(), O_WRONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
         if ((fd_out = open(fifo_out.c_str(), O_RDONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
 
         if ((fp_in = fdopen(fd_in, "w")) == NULL) { printf("cannot fdopen fifo\n");  exit(1); }
         if ((fp_out = fdopen(fd_out, "r")) == NULL) { printf("cannot fdopen fifo\n");  exit(1); }
+    }
+
+    int getUserTime() {
+        string stat_path = "/proc/" + std::to_string(pid) + "/stat";
+        FILE *fp = fopen(stat_path.c_str(), "r");
+        fscanf(fp, "%*d%*s%*s%*d%*d");
+        fscanf(fp, "%*d%*d%*d%*d%*d");
+        fscanf(fp, "%*d%*d%*d");
+
+        unsigned long utime;
+        fscanf(fp, "%lu", &utime);
+        _log("usertime : %lu\n", utime);
+        fclose(fp);
     }
 
     void setTimeout(int T, bool resetTimer) {
@@ -71,6 +87,7 @@ class Player {
     }
 
     void checkTimeout() {
+        getUserTime();
         struct itimerval tick;
         memset(&tick, 0, sizeof(tick));
         if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("reset timer failed!!/n");  exit(1); }
@@ -167,8 +184,8 @@ int main(int argc, char *argv[]) {
     // details = (FILE*) stdout;
     // score = (FILE*) stdout;  // for debug
 
-    players.push_back(Player("g++ A.cpp -o A", "./A", "fifo_CA", "fifo_AC"));
-    players.push_back(Player("g++ B.cpp -o B", "./B", "fifo_CB", "fifo_BC"));
+    players.push_back(Player("g++ A.cpp -o A", "./A"));
+    players.push_back(Player("g++ B.cpp -o B", "./B"));
     Player &Alice = players[0];
     Player &Bob = players[1];
 
@@ -177,7 +194,7 @@ int main(int argc, char *argv[]) {
 
     int x, y;
     memset(board, -1, sizeof(board));
-    const int T1 = 1000, T2 = 1000;
+    const int T1 = 5000, T2 = 5000;
 
     Alice.run();
     Alice.setTimeout(T1+T2, false);
