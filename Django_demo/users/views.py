@@ -14,6 +14,8 @@ def register(request):
     if request.method == 'POST':
         _username = request.POST['username']
         _password = request.POST['password']
+        if User.objects.filter(username=_username):
+            return render(request, 'users/register.html', {"fail":True})
         user = User.objects.create_user(
             username=_username,
             password=_password
@@ -29,4 +31,6 @@ def login(request):
         user = authenticate(username=_username, password=_password)
         if user is not None:
             return render(request, 'users/index.html', {"username":_username})
+        else:
+            return render(request, 'users/login.html', {"fail":True})
     return render(request, 'users/login.html')
