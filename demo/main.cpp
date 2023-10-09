@@ -23,7 +23,7 @@ void alarm_handler(int);
 class Player {
     public:
     int player_id, score;
-    string compile_cmd, run_cmd, fifo_in, fifo_out, player_name, tmp_file, container_name, container_id;
+    string compile_cmd, run_cmd, fifo_in, fifo_out, player_name, tmp_file, container_name;
     int fd_in, fd_out, pid;
     FILE *fp_in, *fp_out; 
     static int player_cnt;
@@ -45,34 +45,19 @@ class Player {
         if (mkfifo(fifo_out.c_str(),0777) < 0) { printf("cannot create fifo\n");  exit(1); }
 
         _system("docker run --name %s -d gcc sh -c \"while true; do sleep 1; done\" > %s", container_name.c_str(), tmp_file.c_str());
-
-        {
-            char cid[70];
-            FILE *fp = fopen(tmp_file.c_str(), "r");
-            fscanf(fp, "%s", cid);
-            container_id = cid;
-            fclose(fp);
-        }
-        _log("container_id : %s\n", container_id.c_str());
-
         _system("docker cp %s %s:/code", player_name.c_str(), container_name.c_str());
-        _system("docker exec %s %s", container_name.c_str(), compile_cmd.c_str());
+        _system("docker exec -w /code %s %s", container_name.c_str(), compile_cmd.c_str());
     }
 
     void clean() {
         _system("docker rm -f %s > /dev/null", container_name.c_str());
+        remove(tmp_file.c_str());
         unlink(fifo_in.c_str());
         unlink(fifo_out.c_str());
-        signal_kill();
     }
 
     void run() {
-        _system("docker exec -i %s %s < %s > %s &", container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
-
-        // FILE *fp = fopen(tmp_file.c_str(), "r");
-        // fscanf(fp, "%d", &pid);
-        // fclose(fp);
-        // _log("pid = %d\n", pid);
+        _system("docker exec -i -w /code %s %s < %s > %s &", container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
 
         if ((fd_in = open(fifo_in.c_str(), O_WRONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
         if ((fd_out = open(fifo_out.c_str(), O_RDONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
@@ -95,32 +80,28 @@ class Player {
     }
 
     void setTimeout(int T, bool resetTimer) {
-        player_now = player_id;
-        struct itimerval tick;
-        memset(&tick, 0, sizeof(tick));
-        tick.it_value.tv_sec = T / 1000;
-        tick.it_value.tv_usec = T % 1000;
-        if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("set timer failed!!/n");  exit(1); }
+        // player_now = player_id;
+        // struct itimerval tick;
+        // memset(&tick, 0, sizeof(tick));
+        // tick.it_value.tv_sec = T / 1000;
+        // tick.it_value.tv_usec = T % 1000;
+        // if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("set timer failed!!/n");  exit(1); }
     }
 
     void checkTimeout() {
-        getUserTime();
-        struct itimerval tick;
-        memset(&tick, 0, sizeof(tick));
-        if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("reset timer failed!!/n");  exit(1); }
-        player_now = -1;
+        // getUserTime();
+        // struct itimerval tick;
+        // memset(&tick, 0, sizeof(tick));
+        // if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("reset timer failed!!/n");  exit(1); }
+        // player_now = -1;
     }
 
     void signal_stop() {
-        kill(pid, SIGSTOP);
+        _system("docker pause %s > /dev/null", container_name.c_str());
     }
 
     void signal_continue() {
-        kill(pid, SIGCONT);
-    }
-
-    void signal_kill() {
-        kill(pid, SIGKILL);
+        _system("docker unpause %s > /dev/null", container_name.c_str());
     }
 
     template<typename... Args>
@@ -163,16 +144,16 @@ void endgame(int winner) {
     }
     for (auto &p : players) fprintf(score, "%c: %d\n", 'A'+p.player_id, p.score);
 
-    system("read -p \"Press [Enter] key to continue...\" REPLY"); // pause
+    // system("read -p \"Press [Enter] key to continue...\" REPLY"); // pause
 
     for (auto &p : players) p.clean();
     exit(0);
 }
 
 void alarm_handler(int) {
-    if (player_now < 0) { printf("alarm error/n");  exit(1); }
-    players[player_now]._log("%s", "time limit exceeded\n");
-    endgame(player_now^1);
+    // if (player_now < 0) { printf("alarm error/n");  exit(1); }
+    // players[player_now]._log("%s", "time limit exceeded\n");
+    // endgame(player_now^1);
 }
 
 char board[3][3];
@@ -213,11 +194,9 @@ int main(int argc, char *argv[]) {
 
     details = fopen("details.txt", "w");
     score = fopen("score.txt", "w");
-    // details = (FILE*) stdout;
-    // score = (FILE*) stdout;  // for debug
 
-    players.push_back(Player("g++ code/main.cpp -o code/main", "code/main"));
-    players.push_back(Player("g++ code/main.cpp -o code/main", "code/main"));
+    players.push_back(Player("g++ main.cpp -o main", "./main"));
+    players.push_back(Player("g++ main.cpp -o main", "./main"));
 
     Player &Alice = players[0];
     Player &Bob = players[1];
