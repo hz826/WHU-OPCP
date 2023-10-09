@@ -5,24 +5,42 @@
 #include <unistd.h>
 using namespace std;
 
+#define LOG
+
 class Solution {
     public:
     int Role, StepID;
     int board[3][3];
+    FILE *fp_log;
 
     void init() {
+        #ifdef LOG
+        fp_log = fopen("log.txt", "w");
+        fprintf(fp_log, "init\n", Role);
+        fflush(fp_log);
+        #endif
+
         srand(time(0));
         scanf("%d", &Role);
         StepID = 0;
+
+        #ifdef LOG
+        fprintf(fp_log, "role : %d\n", Role);
+        fflush(fp_log);
+        #endif
     }
 
     void next_step() {
-        for (int i=0;i<=1e9;i++) ;
+        // for (int i=0;i<=1e9;i++) ;
 
         if (Role!=0 || StepID) {
             int x, y;
             scanf("%d%d", &x, &y);
             board[x][y] = 2;
+            #ifdef LOG
+            fprintf(fp_log, "input : %d %d\n", x, y);
+            fflush(fp_log);
+            #endif
         }
 
         ++StepID;
@@ -40,6 +58,11 @@ class Solution {
 
         printf("%d %d\n", xx, yy);
         fflush(stdout);
+
+        #ifdef LOG
+        fprintf(fp_log, "output : %d %d\n", xx, yy);
+        fflush(fp_log);
+        #endif
     }
 } solotion;
 

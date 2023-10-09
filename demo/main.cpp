@@ -23,17 +23,19 @@ void alarm_handler(int);
 class Player {
     public:
     int player_id, score;
-    string compile_cmd, run_cmd, fifo_in, fifo_out, pid_file;
+    string compile_cmd, run_cmd, fifo_in, fifo_out, player_name, tmp_file, container_name, container_id;
     int fd_in, fd_out, pid;
-    FILE *fp_in, *fp_out;
+    FILE *fp_in, *fp_out; 
     static int player_cnt;
 
     Player(string compile_cmd, string run_cmd) 
         : compile_cmd(compile_cmd), run_cmd(run_cmd) {
             player_id = player_cnt++;
-            fifo_in = string("fifo_in_") + char('A'+player_id);
-            fifo_out = string("fifo_out_") + char('A'+player_id);
-            pid_file = string("pid_") + char('A'+player_id);
+            player_name = char('A'+player_id);
+            fifo_in = string("fifo_in_") + player_name;
+            fifo_out = string("fifo_out_") + player_name;
+            tmp_file = string("tmp_") + player_name;
+            container_name = string("sandbox_") + player_name;
         }
 
     void init() {
@@ -41,21 +43,36 @@ class Player {
         unlink(fifo_out.c_str());
         if (mkfifo(fifo_in.c_str(),0777) < 0) { printf("cannot create fifo\n");  exit(1); } 
         if (mkfifo(fifo_out.c_str(),0777) < 0) { printf("cannot create fifo\n");  exit(1); }
-        system(compile_cmd.c_str());
+
+        _system("docker run --name %s -d gcc sh -c \"while true; do sleep 1; done\" > %s", container_name.c_str(), tmp_file.c_str());
+
+        {
+            char cid[70];
+            FILE *fp = fopen(tmp_file.c_str(), "r");
+            fscanf(fp, "%s", cid);
+            container_id = cid;
+            fclose(fp);
+        }
+        _log("container_id : %s\n", container_id.c_str());
+
+        _system("docker cp %s %s:/code", player_name.c_str(), container_name.c_str());
+        _system("docker exec %s %s", container_name.c_str(), compile_cmd.c_str());
     }
 
     void clean() {
+        _system("docker rm -f %s > /dev/null", container_name.c_str());
         unlink(fifo_in.c_str());
         unlink(fifo_out.c_str());
         signal_kill();
     }
 
     void run() {
-        system((run_cmd + " < " + fifo_in + " > " + fifo_out + "& echo $! > " + pid_file).c_str());
-        FILE *fp = fopen(pid_file.c_str(), "r");
-        fscanf(fp, "%d", &pid);
-        fclose(fp);
-        _log("pid = %d\n", pid);
+        _system("docker exec -i %s %s < %s > %s &", container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
+
+        // FILE *fp = fopen(tmp_file.c_str(), "r");
+        // fscanf(fp, "%d", &pid);
+        // fclose(fp);
+        // _log("pid = %d\n", pid);
 
         if ((fd_in = open(fifo_in.c_str(), O_WRONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
         if ((fd_out = open(fifo_out.c_str(), O_RDONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
@@ -65,16 +82,16 @@ class Player {
     }
 
     int getUserTime() {
-        string stat_path = "/proc/" + std::to_string(pid) + "/stat";
-        FILE *fp = fopen(stat_path.c_str(), "r");
-        fscanf(fp, "%*d%*s%*s%*d%*d");
-        fscanf(fp, "%*d%*d%*d%*d%*d");
-        fscanf(fp, "%*d%*d%*d");
+        // string stat_path = "/proc/" + std::to_string(pid) + "/stat";
+        // FILE *fp = fopen(stat_path.c_str(), "r");
+        // fscanf(fp, "%*d%*s%*s%*d%*d");
+        // fscanf(fp, "%*d%*d%*d%*d%*d");
+        // fscanf(fp, "%*d%*d%*d");
 
-        unsigned long utime;
-        fscanf(fp, "%lu", &utime);
-        _log("usertime : %lu\n", utime);
-        fclose(fp);
+        // unsigned long utime;
+        // fscanf(fp, "%lu", &utime);
+        // _log("usertime : %lu\n", utime);
+        // fclose(fp);
     }
 
     void setTimeout(int T, bool resetTimer) {
@@ -118,6 +135,14 @@ class Player {
     }
 
     template<typename... Args>
+    void _system(Args... args) {
+        char cmd[1024];
+        sprintf(cmd, args...);
+        _log(">>> %s\n", cmd);
+        ::system(cmd);
+    }
+
+    template<typename... Args>
     void _log(Args... args) {
         fprintf(details, "%c: ", 'A'+player_id);
         fprintf(details, args...);
@@ -137,6 +162,9 @@ void endgame(int winner) {
         players[winner^1].score = 0; 
     }
     for (auto &p : players) fprintf(score, "%c: %d\n", 'A'+p.player_id, p.score);
+
+    system("read -p \"Press [Enter] key to continue...\" REPLY"); // pause
+
     for (auto &p : players) p.clean();
     exit(0);
 }
@@ -159,10 +187,14 @@ void add(int turn, int x, int y) {
     board[x][y] = turn;
     const char ch[3] = {' ', 'o', 'x'};
     
-    // for (int i=0;i<3;i++) {
-    //     for (int j=0;j<3;j++) putchar(ch[board[i][j]]);
-    //     putchar('\n');
-    // }
+    string visualize_board = "---\n";
+    for (int i=0;i<3;i++) {
+        visualize_board += "  |";
+        for (int j=0;j<3;j++) visualize_board += ch[board[i][j]+1];
+        visualize_board += "|\n";
+    }
+    visualize_board += "   ---\n";
+    player._log("%s", visualize_board.c_str());
 
     if ((board[x][0] == turn && board[x][1] == turn && board[x][2] == turn) ||
         (board[0][y] == turn && board[1][y] == turn && board[2][y] == turn) ||
@@ -184,8 +216,9 @@ int main(int argc, char *argv[]) {
     // details = (FILE*) stdout;
     // score = (FILE*) stdout;  // for debug
 
-    players.push_back(Player("g++ A.cpp -o A", "./A"));
-    players.push_back(Player("g++ B.cpp -o B", "./B"));
+    players.push_back(Player("g++ code/main.cpp -o code/main", "code/main"));
+    players.push_back(Player("g++ code/main.cpp -o code/main", "code/main"));
+
     Player &Alice = players[0];
     Player &Bob = players[1];
 
