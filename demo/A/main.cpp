@@ -16,7 +16,7 @@ class Solution {
     void init() {
         #ifdef LOG
         fp_log = fopen("log.txt", "w");
-        fprintf(fp_log, "init\n", Role);
+        fprintf(fp_log, "init\n");
         fflush(fp_log);
         #endif
 
@@ -28,6 +28,11 @@ class Solution {
         fprintf(fp_log, "role : %d\n", Role);
         fflush(fp_log);
         #endif
+
+        int size = 128*1024*1024;
+        char *a = (char*)malloc(size);
+        fprintf(fp_log, "malloc : %p\n", a);
+        for (int i=0;i<size;i++) a[i] = '0';
     }
 
     void next_step() {

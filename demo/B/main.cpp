@@ -16,7 +16,7 @@ class Solution {
     void init() {
         #ifdef LOG
         fp_log = fopen("log.txt", "w");
-        fprintf(fp_log, "init\n", Role);
+        fprintf(fp_log, "init\n");
         fflush(fp_log);
         #endif
 

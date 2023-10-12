@@ -6,6 +6,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <string>
 #include <vector>
@@ -19,17 +21,18 @@ vector<Player> players;
 int player_now;
 
 void alarm_handler(int);
+void endgame(int);
 
 class Player {
     public:
-    int player_id, score;
-    string compile_cmd, run_cmd, fifo_in, fifo_out, player_name, tmp_file, container_name;
+    int player_id, score, last_timeUsage;
+    string compile_cmd, run_cmd, memory_limit, fifo_in, fifo_out, player_name, tmp_file, container_name, container_longid;
     int fd_in, fd_out, pid;
     FILE *fp_in, *fp_out; 
     static int player_cnt;
 
-    Player(string compile_cmd, string run_cmd) 
-        : compile_cmd(compile_cmd), run_cmd(run_cmd) {
+    Player(string compile_cmd, string run_cmd, string memory_limit) 
+        : compile_cmd(compile_cmd), run_cmd(run_cmd), memory_limit(memory_limit) {
             player_id = player_cnt++;
             player_name = char('A'+player_id);
             fifo_in = string("fifo_in_") + player_name;
@@ -45,8 +48,18 @@ class Player {
         if (mkfifo(fifo_out.c_str(),0777) < 0) { printf("cannot create fifo\n");  exit(1); }
 
         _system("docker run --name %s -d gcc sh -c \"while true; do sleep 1; done\" > %s", container_name.c_str(), tmp_file.c_str());
+
+        char cid[70];
+        FILE *fp = fopen(tmp_file.c_str(), "r");
+        fscanf(fp, "%s", cid);
+        container_longid = cid;
+        fclose(fp);
+
         _system("docker cp %s %s:/code", player_name.c_str(), container_name.c_str());
         _system("docker exec -w /code %s %s", container_name.c_str(), compile_cmd.c_str());
+
+        // cgroup v1
+        // _system("echo %s > /sys/fs/cgroup/memory/docker/%s/memory.limit_in_bytes", memory_limit.c_str(), container_longid.c_str());
     }
 
     void clean() {
@@ -57,7 +70,14 @@ class Player {
     }
 
     void run() {
-        _system("docker exec -i -w /code %s %s < %s > %s &", container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
+        _system("docker update --memory %s --memory-swap %s %s > /dev/null", memory_limit.c_str(), memory_limit.c_str(), container_name.c_str());
+        
+        pid = fork();
+        if (pid < 0) { printf("cannot fork\n");  exit(1); }
+        if (pid == 0) {
+            _system("docker exec -i -w /code %s %s < %s > %s", container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
+            exit(0);
+        }
 
         if ((fd_in = open(fifo_in.c_str(), O_WRONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
         if ((fd_out = open(fifo_out.c_str(), O_RDONLY)) < 0) { printf("cannot open fifo\n");  exit(1); }
@@ -66,20 +86,45 @@ class Player {
         if ((fp_out = fdopen(fd_out, "r")) == NULL) { printf("cannot fdopen fifo\n");  exit(1); }
     }
 
-    int getUserTime() {
-        // string stat_path = "/proc/" + std::to_string(pid) + "/stat";
-        // FILE *fp = fopen(stat_path.c_str(), "r");
-        // fscanf(fp, "%*d%*s%*s%*d%*d");
-        // fscanf(fp, "%*d%*d%*d%*d%*d");
-        // fscanf(fp, "%*d%*d%*d");
+    int getTimeUsage() {
+        // cgroup v1
+        unsigned long long user_time_ns, sys_time_ns;
+        string cgroup_cpuacct_path = "/sys/fs/cgroup/cpuacct/docker/" + container_longid + "/";
+        FILE *fp;
 
-        // unsigned long utime;
-        // fscanf(fp, "%lu", &utime);
-        // _log("usertime : %lu\n", utime);
-        // fclose(fp);
+        fp = fopen((cgroup_cpuacct_path+"cpuacct.usage_user").c_str(), "r");
+        fscanf(fp, "%llu", &user_time_ns);
+        fclose(fp);
+
+        fp = fopen((cgroup_cpuacct_path+"cpuacct.usage_sys").c_str(), "r");
+        fscanf(fp, "%llu", &sys_time_ns);
+        fclose(fp);
+
+        int total_time_ms = (user_time_ns + sys_time_ns) / 1000000;
+        return total_time_ms;
     }
 
-    void setTimeout(int T, bool resetTimer) {
+    double getMemoryUsage() {
+        // cgroup v1
+        unsigned long long usage, limit;
+        string cgroup_memory_path = "/sys/fs/cgroup/memory/docker/" + container_longid + "/";
+        FILE *fp;
+
+        fp = fopen((cgroup_memory_path+"memory.max_usage_in_bytes").c_str(), "r");
+        fscanf(fp, "%llu", &usage);
+        fclose(fp);
+
+        fp = fopen((cgroup_memory_path+"memory.limit_in_bytes").c_str(), "r");
+        fscanf(fp, "%llu", &limit);
+        fclose(fp);
+
+        double precent = 100.0 * usage / limit;
+        _log("MemoryUsage : %llu / %llu = %.1f%%\n", usage, limit, precent);
+    }
+
+    void setTimeout(int T) {
+        last_timeUsage = getTimeUsage();
+
         // player_now = player_id;
         // struct itimerval tick;
         // memset(&tick, 0, sizeof(tick));
@@ -89,7 +134,18 @@ class Player {
     }
 
     void checkTimeout() {
-        // getUserTime();
+        int wstatus;
+        int result = waitpid(pid, &wstatus, WNOHANG);
+        if (result == pid) {
+            _log("%s\n", "Exited abnormally");
+            getMemoryUsage();
+            endgame(player_id^1);
+        }
+
+        int total_time_ms = getTimeUsage();
+        _log("TimeUsage : %d ms\n", total_time_ms - last_timeUsage);
+        getMemoryUsage();
+
         // struct itimerval tick;
         // memset(&tick, 0, sizeof(tick));
         // if (setitimer(ITIMER_REAL, &tick, NULL)) { printf("reset timer failed!!/n");  exit(1); }
@@ -144,7 +200,7 @@ void endgame(int winner) {
     }
     for (auto &p : players) fprintf(score, "%c: %d\n", 'A'+p.player_id, p.score);
 
-    // system("read -p \"Press [Enter] key to continue...\" REPLY"); // pause
+    system("read -p \"Press [Enter] key to continue...\" REPLY"); // pause
 
     for (auto &p : players) p.clean();
     exit(0);
@@ -195,8 +251,8 @@ int main(int argc, char *argv[]) {
     details = fopen("details.txt", "w");
     score = fopen("score.txt", "w");
 
-    players.push_back(Player("g++ main.cpp -o main", "./main"));
-    players.push_back(Player("g++ main.cpp -o main", "./main"));
+    players.push_back(Player("g++ main.cpp -o main", "./main", "128m"));
+    players.push_back(Player("g++ main.cpp -o main", "./main", "128m"));
 
     Player &Alice = players[0];
     Player &Bob = players[1];
@@ -208,16 +264,16 @@ int main(int argc, char *argv[]) {
     memset(board, -1, sizeof(board));
     const int T1 = 5000, T2 = 5000;
 
+    Alice.setTimeout(T1+T2);
     Alice.run();
-    Alice.setTimeout(T1+T2, false);
     Alice._printf("%d\n", 0);
     Alice._scanf("%d%d", &x, &y);
     Alice.signal_stop();
     Alice.checkTimeout();
     add(0, x, y);
 
+    Bob.setTimeout(T1+T2);
     Bob.run();
-    Bob.setTimeout(T1+T2, false);
     Bob._printf("%d\n%d %d\n", 1, x, y);
     Bob._scanf("%d%d", &x, &y);
     Bob.signal_stop();
@@ -227,7 +283,7 @@ int main(int argc, char *argv[]) {
     int turn = 0;
     while (1) {
         Player &player = (turn==0 ? Alice : Bob);
-        player.setTimeout(T2, true);
+        player.setTimeout(T2);
         player.signal_continue();
         player._printf("%d %d\n", x, y);
         player._scanf("%d%d", &x, &y);
