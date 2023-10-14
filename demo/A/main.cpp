@@ -29,14 +29,15 @@ class Solution {
         fflush(fp_log);
         #endif
 
-        int size = 128*1024*1024;
+        int size = 1*1024*1024;
         char *a = (char*)malloc(size);
         fprintf(fp_log, "malloc : %p\n", a);
         for (int i=0;i<size;i++) a[i] = '0';
     }
 
     void next_step() {
-        // for (int i=0;i<=1e9;i++) ;
+        for (int i=0;i<=1e9;i++) ;
+        // sleep(5);
 
         if (Role!=0 || StepID) {
             int x, y;
