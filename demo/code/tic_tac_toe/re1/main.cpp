@@ -28,17 +28,9 @@ class Solution {
         fprintf(fp_log, "role : %d\n", Role);
         fflush(fp_log);
         #endif
-
-        // int size = 1*1024*1024;
-        // char *a = (char*)malloc(size);
-        // fprintf(fp_log, "malloc : %p\n", a);
-        // for (int i=0;i<size;i++) a[i] = '0';
     }
 
     void next_step() {
-        // for (int i=0;i<=1e9;i++) ;
-        // sleep(5);
-
         if (Role!=0 || StepID) {
             int x, y;
             scanf("%d%d", &x, &y);
@@ -49,7 +41,7 @@ class Solution {
             #endif
         }
 
-        ++StepID;
+        StepID += 1/0; ////////////////////////////////////////
         int u[3] = {0,1,2}, v[3] = {0,1,2};
         random_shuffle(u, u+3);
         random_shuffle(v, v+3);

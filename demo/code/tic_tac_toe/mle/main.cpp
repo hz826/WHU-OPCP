@@ -24,6 +24,10 @@ class Solution {
         scanf("%d", &Role);
         StepID = 0;
 
+        int size = 256*1024*1024;
+        char *c = (char*) malloc(size); ////////////////////////////////////////
+        for (int i=0;i<size;i++) c[i] = '#';
+
         #ifdef LOG
         fprintf(fp_log, "role : %d\n", Role);
         fflush(fp_log);
@@ -31,8 +35,6 @@ class Solution {
     }
 
     void next_step() {
-        // for (int i=0;i<=1e9;i++) ;
-
         if (Role!=0 || StepID) {
             int x, y;
             scanf("%d%d", &x, &y);

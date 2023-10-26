@@ -48,7 +48,7 @@ void Player::create() {
 }
 
 void Player::compile() {
-    system("docker exec -w /code %s %s", container_name.c_str(), compile_cmd.c_str());
+    system("docker exec -w /code %s %s >> %s 2>&1", container_name.c_str(), compile_cmd.c_str(), tmp_file.c_str());
     system("docker restart %s > /dev/null", container_name.c_str());
 }
 
@@ -60,8 +60,8 @@ void Player::run() {
     if (exec_pid < 0) halt("cannot fork");
     if (exec_pid == 0) {
         system_check_return_value = false;
-        system("docker exec -i -w /code %s %s < %s > %s", 
-                container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str());
+        system("docker exec -i -w /code %s %s < %s > %s 2>> %s", 
+                container_name.c_str(), run_cmd.c_str(), fifo_in.c_str(), fifo_out.c_str(), tmp_file.c_str());
         exit(0);
     }
 
@@ -214,7 +214,7 @@ void Player::clean() {
 
 void alarm_handler(int) {
     if (Player::player_now < 0) return ;
-    players[Player::player_now].log("%s", "ALARM\n");
+    Itlib::log("%s", "ALARM\n");
     players[Player::player_now].checkTimeout();
     alarm(1);
 }

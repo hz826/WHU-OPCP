@@ -31,7 +31,7 @@ void add(int now, int x, int y) {
             players[now].score = 2;
             players[now^1].score = 0;
             players[now].log("%s", "Win\n");
-            Itlib::endgame("Player win");
+            Itlib::endgame("Someone WIN");
         }
     
     int counter = 0;
@@ -44,7 +44,7 @@ void add(int now, int x, int y) {
 };
 
 int main(int argc, char *argv[]) {
-    Itlib::init(2, argc, argv, "16m");
+    Itlib::init(2, argc, argv, "256m");
 
     Itlib::playercrashed_handler = [&](int playerID) {
         players[playerID].score = 0;
