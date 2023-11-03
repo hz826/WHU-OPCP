@@ -10,6 +10,7 @@ urlpatterns = [
     path('users/<int:pk>', views.UserDetail.as_view()),
     path('contests/', views.ContestList.as_view()),
     path('contests/<int:pk>', views.ContestDetail.as_view()),
+    path('upload/', views.FileUpload.as_view()),
 ]   
 
 

@@ -8,3 +8,8 @@ User = get_user_model()
 class Contest(models.Model):
     name = models.CharField(max_length=50)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class FileModel(models.Model):
+    filename = models.CharField(max_length=50)
+    file = models.FileField(upload_to='uploads/%Y/%m/%d/')

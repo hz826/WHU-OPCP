@@ -2,8 +2,8 @@ from rest_framework import mixins, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from .models import User, Contest
-from .serializers import UserSerializer, ContestSerializer
+from .models import User, Contest, FileModel
+from .serializers import UserSerializer, ContestSerializer, FileSerializer
 
 
 class UserList(APIView):
@@ -77,3 +77,8 @@ class ContestList(generics.ListCreateAPIView):
 class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
+
+
+class FileUpload(generics.CreateAPIView):
+    queryser = FileModel.objects.all()
+    serializer_class = FileSerializer
