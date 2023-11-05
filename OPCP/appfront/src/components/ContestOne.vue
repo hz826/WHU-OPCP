@@ -30,8 +30,8 @@ export default {
     upload(e){
       var that=this
       var files = document.getElementById('uFile').value;
-      if (!/\.(gif|jpg|jpeg|png|gif|jpg|png)$/i.test(files)) {
-        this.$message.warning("图片类型必须是.gif,jpeg,jpg,png中的一种,请重新上传")
+      if (!/\.(c|cpp|py)$/i.test(files)) {
+        this.$message.warning("Must be .c/.cpp/.py file")
         return false;
       }
       let file = e.target.files[0]    
@@ -39,11 +39,10 @@ export default {
       formData.append('filename', 'mdlxr');
       formData.append('file', file);
       this.axios.post(`http://localhost:8000/api/upload/`, formData).then((response)=>{   
- 
-              this.$message.success("添加成功")  //需要引入elemrnt
+              this.$message.success("Successfully added")  //需要引入elemrnt
       }).catch((error)=>{
           console.log(error)
-              this.$message.warning("添加失败")
+              this.$message.warning("Addition failed")
         })
      }
   },
@@ -52,3 +51,5 @@ export default {
   }
 }
 </script>
+<style>
+</style>
