@@ -6,6 +6,8 @@
       
       <h2>{{contest.name}} | {{contest.creator}}</h2>
       <et @click="getContest(contest.name, contest.id)">Enter</et>
+      <mt v-if="contest.id == GetId()" @click="modifyContest(contest.name, contest.id)">Modify</mt>
+      <v-else></v-else>
     </li>
     <h1>Interesting in Contest? Create One!</h1>
     <et @click="CreateContest()">Create One!</et>
@@ -14,6 +16,7 @@
 
 <script>
 import {GetUserList, GetContestList} from '../api/api.js'
+import store from '@/store'
 export default {
   name: 'ContestPage',
   data () {
@@ -39,15 +42,28 @@ export default {
         query: { contestid: contestid }
       })
     },
+    modifyContest(name, contestid) {
+      this.$router.push({
+        path: `/modifycontest/${name}`,
+        query: { contestid: contestid }
+      })
+    },
     CreateContest() {
       this.$router.push({
         path: `/createcontest`
       })
+    },
+    GetId() {
+      return store.state.num
     }
+  },
+  computed: {
+    
   },
   created: function () {
     this.LoadContest()
     this.LoadUsers()
+    this.GetId()
   }
 }
 </script>
@@ -61,5 +77,16 @@ et {
   border-radius: 10px;
   background-color: #b3dbc9;
   padding: 10px;
+  margin: 10px;
+}
+mt {
+  color: #1b2d9f;
+  font-size: 20px;
+  font-weight: 600;
+  border: 3px solid rgb(242, 107, 4);
+  border-radius: 10px;
+  background-color: rgb(223, 168, 136);
+  padding: 10px;
+  margin: 10px;
 }
 </style>

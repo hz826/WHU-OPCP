@@ -8,6 +8,7 @@ import RegisterView from '../views/register/RegisterView.vue'
 import UserlistView from '../views/userlist/UserlistView.vue'
 import ContestOne from '../components/ContestOne.vue'
 import CreateContest from '../components/CreateContest.vue'
+import ModifyContest from '../components/ModifyContest.vue'
 
 Vue.use(VueRouter)
 
@@ -51,6 +52,11 @@ const routes = [
     path: '/createcontest',
     name: 'createcontest',
     component: CreateContest
+  },
+  {
+    path: '/modifycontest/:name',
+    name: 'modifycontest',
+    component: ModifyContest
   },
 ]
 

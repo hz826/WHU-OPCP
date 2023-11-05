@@ -12,7 +12,8 @@
     <div v-if="IfSuccess == false">
         <form action="">
         <h3>ContestName: <input type="text" v-model="Contest.name"></h3>
-        <h3>ContestDescription: <input type="text" v-model="Contest.description"></h3>
+        <h3>ContestDescription:</h3>
+        <textarea v-model="Contest.description" rows="4" cols="50"></textarea>
         </form>
         <button type="submit" @click="ContestSubmit()">Submit</button>
     </div>
@@ -21,7 +22,7 @@
 
 <script>
 import {CreateContest} from '../api/api.js'
-import store from '../store'
+import store from '@/store';
 export default {
   name: 'CreateContest',
   data () {
@@ -47,11 +48,6 @@ export default {
         this.IfSuccess = false
       });
     },
-  },
-  computed: {
-    GetId() {
-      return store.state.num
-    }
   }
 }
 </script>
