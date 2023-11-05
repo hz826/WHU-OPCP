@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.contrib.auth import authenticate
-from .models import User, Contest, FileModel
-from .serializers import UserSerializer, ContestSerializer, FileSerializer
+from .models import User, Contest, FileModel, Submission
+from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer
 
 class UserList(APIView):
     '''
@@ -88,3 +88,15 @@ class FileUpload(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryser = FileModel.objects.all()
     serializer_class = FileSerializer
+
+
+class SubmissionList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Contest.objects.all()
+    serializer_class = SubmissionSerializer
+
+
+class SubmissionDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Contest.objects.all()
+    serializer_class = SubmissionSerializer

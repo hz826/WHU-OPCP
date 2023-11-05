@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Contest, FileModel
+from .models import User, Contest, FileModel, Submission
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,4 +17,10 @@ class ContestSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileModel
+        fields = '__all__'
+
+
+class SubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submission
         fields = '__all__'
