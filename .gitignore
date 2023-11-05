@@ -1,2 +1,8 @@
 **/__pycache__
+*
+!*.*
+!*/
+*.txt
+.vscode
+__pycache__
 *.pdf
