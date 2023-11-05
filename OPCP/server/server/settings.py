@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,11 +40,28 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    # 'rest_framework.authtoken'
+    'rest_framework_simplejwt',
     # 'drf_yasg', # Docs
     'corsheaders',
     'users',
 ]
+
+# AUTH_USER_MODEL = "users.User"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+
+SIMPLE_JWT = {
+    # token有效时长(返回的 access 有效时长)
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=3600),
+    # token刷新的有效时间(返回的 refresh 有效时长)
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=24),
+}
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # 需注意与其他中间件顺序，这里放在最前面即可

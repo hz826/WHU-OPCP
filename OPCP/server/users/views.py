@@ -1,16 +1,18 @@
 from rest_framework import mixins, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.contrib.auth import authenticate
 from .models import User, Contest, FileModel
 from .serializers import UserSerializer, ContestSerializer, FileSerializer
-
 
 class UserList(APIView):
     '''
         GET:
             Return all objects.
     '''
+    # authentication_classes = [JSONWebTokenAuthentication]
+    # permission_classes = []
     def get(self, request):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -65,20 +67,24 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         DELETE:
             Delete an object.
     '''
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class ContestList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
 
 class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
 
 class FileUpload(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryser = FileModel.objects.all()
     serializer_class = FileSerializer
