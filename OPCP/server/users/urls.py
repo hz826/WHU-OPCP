@@ -9,11 +9,19 @@ urlpatterns = [
     path('register/', views.UserRegister.as_view()),
     path('login/', views.UserLogin.as_view()),
     path('users/<int:pk>', views.UserDetail.as_view()),
+
     path('contests/', views.ContestList.as_view()),
     path('contests/<int:pk>', views.ContestDetail.as_view()),
+
+    path('file/', views.FileList.as_view()),
     path('upload/', views.FileUpload.as_view()),
+    path('download/<int:pk>', views.FileDownload.as_view()),
+
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh', TokenRefreshView.as_view()),
+
+    path('submissions/', views.SubmissionList.as_view()),
+    path('submissions/<int:pk>', views.SubmissionDetail.as_view()),
 ]   
 
 

@@ -2,6 +2,7 @@ from rest_framework import mixins, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from django.http import Http404, FileResponse
 from django.contrib.auth import authenticate
 from .models import User, Contest, FileModel, Submission
 from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer
@@ -67,7 +68,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         DELETE:
             Delete an object.
     '''
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -79,24 +80,40 @@ class ContestList(generics.ListCreateAPIView):
 
 
 class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
 
-class FileUpload(generics.CreateAPIView):
-    # permission_classes = [IsAuthenticated]
-    queryser = FileModel.objects.all()
+class FileList(generics.ListAPIView):
+    queryset = FileModel.objects.all()
     serializer_class = FileSerializer
 
 
+class FileUpload(generics.CreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    queryset = FileModel.objects.all()
+    serializer_class = FileSerializer
+
+
+class FileDownload(APIView):
+    def get_object(self, pk):
+        try:
+            return FileModel.objects.get(pk=pk)
+        except FileModel.DoesNotExist:
+            raise Http404
+    def get(self, request, pk):
+        file_obj = self.get_object(pk)
+        return FileResponse(open(file_obj.file.path, 'rb'))
+
+
 class SubmissionList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Contest.objects.all()
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
 
 
 class SubmissionDetail(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Contest.objects.all()
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
