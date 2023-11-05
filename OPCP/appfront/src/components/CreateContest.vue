@@ -12,6 +12,7 @@
     <div v-if="IfSuccess == false">
         <form action="">
         <h3>ContestName: <input type="text" v-model="Contest.name"></h3>
+        <h3>ContestDescription: <input type="text" v-model="Contest.description"></h3>
         </form>
         <button type="submit" @click="ContestSubmit()">Submit</button>
     </div>
@@ -28,7 +29,7 @@ export default {
         Contest: {
           "name": "",
           "creator": "",
-          "description": "Contest Description"
+          "description": ""
         },
         Msg: "",
         IfSuccess: false,

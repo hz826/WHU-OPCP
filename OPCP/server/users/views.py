@@ -85,7 +85,7 @@ class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FileUpload(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryser = FileModel.objects.all()
     serializer_class = FileSerializer
 

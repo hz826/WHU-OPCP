@@ -5,7 +5,7 @@
     <li v-for="(contest, index) in contests" :key="index" style="display:block">
       
       <h2>{{contest.name}} | {{contest.creator}}</h2>
-      <et @click="getContest(contest.name)">Enter</et>
+      <et @click="getContest(contest.name, contest.id)">Enter</et>
     </li>
     <h1>Interesting in Contest? Create One!</h1>
     <et @click="CreateContest()">Create One!</et>
@@ -33,9 +33,10 @@ export default {
         this.contests = response.data
       })
     },
-    getContest(name) {
+    getContest(name, contestid) {
       this.$router.push({
-        path: `/contest/${name}`
+        path: `/contest/${name}`,
+        query: { contestid: contestid }
       })
     },
     CreateContest() {

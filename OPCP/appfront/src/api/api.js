@@ -8,7 +8,7 @@ export const GetUserList = () => {return axios.get(`http://localhost:8000/api/us
 export const GetContestList = () => {return axios.get('http://localhost:8000/api/contests/')}
 
 export const GetDescription = (variable) => {
-    const apiurl = `http://localhost:8000/api/contests/${variable}/`
+    const apiurl = `http://localhost:8000/api/contests/${variable}`
     return axios.get(apiurl)
 }
 
