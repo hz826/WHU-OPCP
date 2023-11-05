@@ -146,14 +146,75 @@
 
   ```json
   {
-      "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY5OTE5MDgzNiwiaWF0IjoxNjk5MTA0NDM2LCJqdGkiOiJmMGM5N2QzYTM3ZjA0OTg2YTRlMTBjODUyNjFmZTQwZiIsInVzZXJfaWQiOjR9.DfCPSc7CVUokmtCCSc_DJkVk8WAPqMYzkTGc6tsiSnY",
       "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjk5MTA4MDM2LCJpYXQiOjE2OTkxMDQ0MzYsImp0aSI6IjVjMTdhNzlmZDczZjQ4MDZhMzA0MjljYmZkYmY1NWQ1IiwidXNlcl9pZCI6NH0.OYjM3XGq9rw9jyhKTiGR-rf0I-ZkjgMDm4Qn3ppzK8o"
   }
   ```
-
+  
 - | Parameter | Description   |
   | --------- | ------------- |
   | refresh   | refresh token |
 
 ---
+
+**POST** ```/api/upload```
+
+- **上传文件**
+
+- **返回值为上传的文件信息**
+
+  ```json
+  {
+      "id": 6,
+      "filename": "m",
+      "file": "http://127.0.0.1:8000/uploads/2023/11/05/m_suNfjer.cpp"
+  }
+  ```
+
+- | Parameter | Description |
+  | --------- | ----------- |
+  | filename  | filename    |
+  | file      | 上传的文件  |
+
+---
+
+**GET** ```/api/download/<int:pk>```
+
+- **下载文件**
+- **返回 id=pk 的文件**
+
+---
+
+**GET** ```/api/submissions```
+
+- **返回提交列表**
+
+  ```json
+  [
+      {
+          "id": 1,
+          "status": "Judging",
+          "score": 0.0,
+          "user": 1,
+          "contest": 1,
+          "file": 1
+      }
+  ]
+  ```
+
+---
+
+**GET** ```/api/submissions/<int:pk>```
+
+- **返回 id=pk 的提交信息**
+
+  ```json
+  {
+      "id": 1,
+      "status": "Judging",
+      "score": 0.0,
+      "user": 1,
+      "contest": 1,
+      "file": 1
+  }
+  ```
 
