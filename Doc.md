@@ -218,3 +218,29 @@
   }
   ```
 
+---
+
+**PATCH** ```/api/submissions/<int:pk>```
+
+- **修改 id=pk 的提交信息**
+
+  ```json
+  {
+      "id": 1,
+      "status": "Judging",
+      "score": 0.0,
+      "user": 1,
+      "contest": 1,
+      "file": 1
+  }
+  ```
+
+- | Parameter | Description |
+  | --------- | ----------- |
+  | *status   | 评测状态    |
+  | *score    | 评测分数    |
+
+  (*为可选参数)
+
+---
+

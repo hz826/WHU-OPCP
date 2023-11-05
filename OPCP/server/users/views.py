@@ -113,7 +113,7 @@ class SubmissionList(generics.ListCreateAPIView):
     serializer_class = SubmissionSerializer
 
 
-class SubmissionDetail(generics.RetrieveAPIView):
+class SubmissionDetail(generics.RetrieveUpdateAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
