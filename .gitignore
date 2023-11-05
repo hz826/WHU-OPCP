@@ -4,3 +4,4 @@
 *.txt
 .vscode
 __pycache__
+*.pdf

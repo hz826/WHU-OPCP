@@ -1,0 +1,7 @@
+<h1>Index Page</h1>
+{% if username %}
+    Welcome, {{username}}.
+{% else %}
+    <a href='login'>Login</a><br>
+    <a href='register'>Register</a>
+{% endif %}
