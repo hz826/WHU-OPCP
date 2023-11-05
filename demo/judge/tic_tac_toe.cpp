@@ -5,11 +5,11 @@ char board[3][3];
 
 void add(int now, int x, int y) {
     Player &player = players[now];
-    player.log("%d %d\n", x, y);
+    Itlib::log(player, "%d %d\n", x, y);
     if (x < 0 || x > 2 || y < 0 || y > 2 || board[x][y] != -1) {
         players[now].score = 0;
         players[now^1].score = 2;
-        players[now].log("%s", "Invalid operation\n");
+        Itlib::log(players[now], "%s", "Invalid operation\n");
         Itlib::endgame("Invalid operation");
     }
     board[x][y] = now;
@@ -22,7 +22,7 @@ void add(int now, int x, int y) {
         visualize_board += "|\n";
     }
     visualize_board += "   ---\n";
-    player.log("%s", visualize_board.c_str());
+    Itlib::log(players[now], "%s", visualize_board.c_str());
 
     if ((board[x][0] == now && board[x][1] == now && board[x][2] == now) ||
         (board[0][y] == now && board[1][y] == now && board[2][y] == now) ||
@@ -30,7 +30,7 @@ void add(int now, int x, int y) {
         (board[0][2] == now && board[1][1] == now && board[2][0] == now)) {
             players[now].score = 2;
             players[now^1].score = 0;
-            players[now].log("%s", "Win\n");
+            Itlib::log(players[now], "%s", "Win\n");
             Itlib::endgame("Someone WIN");
         }
     

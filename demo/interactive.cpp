@@ -24,6 +24,10 @@ vector<Player> players;
 int Player::player_cnt = 0;
 int Player::player_now = -1;
 
+string Player::getname() const {
+    return player_name;
+}
+
 void Player::create() {
     system("mkdir %s", tmp_folder.c_str());
     tmp_folder_created = true;
@@ -31,8 +35,8 @@ void Player::create() {
     if (mkfifo(fifo_in.c_str(),0777) < 0) halt("cannot create fifo");
     if (mkfifo(fifo_out.c_str(),0777) < 0) halt("cannot create fifo");
 
-    system("docker run --name %s -d gcc sh -c \"while true; do sleep 1; done\" > %s", 
-            container_name.c_str(), tmp_file.c_str());
+    system("docker run --name %s -d %s sh -c \"while true; do sleep 1; done\" > %s", 
+            container_name.c_str(), image_name.c_str(), tmp_file.c_str());
     container_created = true;
 
     char cid[70];
@@ -123,7 +127,7 @@ double Player::getMemoryUsage() {
     fclose(fp);
 
     double precent = 100.0 * usage / limit;
-    log("MemoryUsage : %llu / %llu = %.1f%%\n", usage, limit, precent);
+    log("[Limit] MemoryUsage : %llu / %llu = %.1f%%\n", usage, limit, precent);
     return precent;
 }
 
@@ -141,8 +145,8 @@ void Player::halt(const char* errmsg) {
     Itlib::internalError();
 }
 
-Player::Player(string code_folder, string compile_cmd, string run_cmd, string memory_limit) 
-    : code_folder(code_folder), compile_cmd(compile_cmd), run_cmd(run_cmd), memory_limit(memory_limit) {
+Player::Player(string image_name, string code_folder, string compile_cmd, string run_cmd, string memory_limit) 
+    : image_name(image_name), code_folder(code_folder), compile_cmd(compile_cmd), run_cmd(run_cmd), memory_limit(memory_limit) {
     playerID = player_cnt++;
     player_name = char('A'+playerID);
     container_name = "sandbox_" + Itlib::prefix + "_" + player_name;
@@ -161,7 +165,7 @@ Player::Player(string code_folder, string compile_cmd, string run_cmd, string me
 }
 
 void Player::startRound(int Timeout_ms) {
-    log("%s", "startRound\n");
+    log("[Debug] %s", "startRound\n");
 
     setTimeout(Timeout_ms);
     if (++round_cnt == 1) {
@@ -173,12 +177,12 @@ void Player::startRound(int Timeout_ms) {
 }
 
 void Player::checkTimeout() { 
-    log("%s", "checkTimeout start\n");
+    log("[Debug] %s", "checkTimeout start\n");
     int wstatus;
     int result = waitpid(exec_pid, &wstatus, WNOHANG);
     if (result < 0) halt("waitpid error");
     if (result == exec_pid) {
-        log("%s", "Exited abnormally\n");
+        log("[Debug] %s", "Exited abnormally\n");
         double m = getMemoryUsage();
 
         Itlib::playercrashed_handler(playerID);
@@ -189,13 +193,13 @@ void Player::checkTimeout() {
     auto p = getTimeUsage();
     int used = p.first;
     int real = p.second;
-    log("TimeUsage : used=%d ms  real=%d ms\n", used, real);
+    log("[Limit] TimeUsage : used=%d ms  real=%d ms\n", used, real);
 
     if (used > timeout || real > 3*timeout+1000) {
         Itlib::playercrashed_handler(playerID);
         Itlib::endgame("TIME LIMIT EXECEED");
     }
-    log("%s", "checkTimeout finished\n");
+    log("[Debug] %s", "checkTimeout finished\n");
 }
 
 void Player::finishRound() {
@@ -203,7 +207,7 @@ void Player::finishRound() {
     signal_stop();
     checkTimeout();
     getMemoryUsage();
-    log("%s", "finishRound\n");
+    log("[Debug] %s", "finishRound\n");
 }
 
 void Player::clean() {
@@ -214,7 +218,7 @@ void Player::clean() {
 
 void alarm_handler(int) {
     if (Player::player_now < 0) return ;
-    Itlib::log("%s", "ALARM\n");
+    Itlib::log("[Debug] %s", "ALARM\n");
     players[Player::player_now].checkTimeout();
     alarm(1);
 }
@@ -224,41 +228,35 @@ FILE* Itlib::fp_score = NULL;
 string Itlib::prefix = "";
 
 function<void(int)> Itlib::playercrashed_handler = [&](int x) {
-    log("%s", "playercrashed_handler haven't set\n");
+    Itlib::log("[Debug] %s", "playercrashed_handler haven't set\n");
 };
 
 void Itlib::init(int player_cnt, int argc, char *argv[], string memory_limit) {
     fp_details = fopen("details.txt", "w");
     fp_score = fopen("score.txt", "w");
 
-    if (argc != player_cnt*3+2) {
-        Itlib::log("%s", "incorrect argument count\n");
+    if (argc != player_cnt*4+2) {
+        Itlib::log("[Debug] %s", "incorrect argument count\n");
         Itlib::internalError();
     }
-
     signal(SIGALRM, alarm_handler);
     alarm(1);
 
     Itlib::prefix = argv[1];
     int index = 1;
 
-    // log("prefix = %s\n", prefix.c_str());
-    // if (mkdir(prefix.c_str(), 0777) != 0) {
-    //     log("%s\n", "cannot creat prefix folder");
-    //     internalError();
-    // }
-
     for (int i=0;i<player_cnt;i++) {
         string folder_path = argv[++index];
+        string image_name = argv[++index];
         string compile_cmd = argv[++index];
         string run_cmd = argv[++index];
-        players.push_back(Player(folder_path, compile_cmd, run_cmd, memory_limit));
+        players.push_back(Player(image_name, folder_path, compile_cmd, run_cmd, memory_limit));
     }
 }
 
 void Itlib::endgame(string msg) {
     for (auto &p : players) p.clean();
-    log("%s\n", msg.c_str());
+    Itlib::log("[Debug] %s\n", msg.c_str());
     fprintf(fp_score, "%s\n", msg.c_str());
     char c = 'A';
     for (auto &p : players) fprintf(fp_score, "%c: %d\n", c++, p.score);

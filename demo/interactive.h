@@ -12,7 +12,7 @@ public:
     static int player_cnt, player_now;
     int score;
 
-    Player(string code_folder, string compile_cmd, string run_cmd, string memory_limit);
+    Player(string image_name, string code_folder, string compile_cmd, string run_cmd, string memory_limit);
     void startRound(int Timeout_ms);
     void checkTimeout();
     void finishRound();
@@ -22,8 +22,7 @@ public:
     void scanf(Args... args);
     template<typename... Args>
     void printf(Args... args);
-    template<typename... Args>
-    void log(Args... args);
+    string getname() const;
 
 private:
     int playerID, round_cnt;
@@ -32,7 +31,7 @@ private:
     unsigned long long lastTime_used, lastTime_real;
     int timeout;
 
-    string code_folder, compile_cmd, run_cmd, memory_limit, player_name, tmp_folder;
+    string image_name, code_folder, compile_cmd, run_cmd, memory_limit, player_name, tmp_folder;
     string fifo_in, fifo_out, tmp_file, container_name, container_longid;
 
     int fd_in, fd_out, exec_pid;
@@ -52,6 +51,8 @@ private:
 
     template<typename... Args>
     void system(Args... args);
+    template<typename... Args>
+    void log(Args... args);
 };
 
 extern vector<Player> players;
@@ -67,7 +68,10 @@ class Itlib {
     static void internalError();
     
     template<typename... Args>
-    static void log(Args... args);
+    static void log(const Player &player, const char* format, Args... args);
+
+    template<typename... Args>
+    static void log(const char* format, Args... args);
 };
 
 template<typename... Args>
@@ -92,13 +96,20 @@ template<typename... Args>
 void Player::system(Args... args) {
     char cmd[1024];
     sprintf(cmd, args...);
-    log(">>> %s\n", cmd);
+    log("[Debug] >>> %s\n", cmd);
     if (::system(cmd) && system_check_return_value) halt("failed on executing bash command");
 }
 
 template<typename... Args>
-void Itlib::log(Args... args) {
+void Itlib::log(const Player &player, const char* format, Args... args) {
+    fprintf(Itlib::fp_details, "%s: ", player.getname().c_str());
+    fprintf(Itlib::fp_details, format, args...);
+    fflush(Itlib::fp_details);
+}
+
+template<typename... Args>
+void Itlib::log(const char* format, Args... args) {
     fprintf(Itlib::fp_details, "=: ");
-    fprintf(Itlib::fp_details, args...);
+    fprintf(Itlib::fp_details, format, args...);
     fflush(Itlib::fp_details);
 }

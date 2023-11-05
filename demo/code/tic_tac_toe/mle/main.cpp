@@ -54,8 +54,9 @@ class Solution {
         for (int i=0;i<3;i++) for (int j=0;j<3;j++) if (!board[u[i]][v[j]]) {
             xx = u[i];
             yy = v[j];
-            break;
+            goto outer;
         }
+        outer:
         board[xx][yy] = 1;
 
         printf("%d %d\n", xx, yy);

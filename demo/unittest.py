@@ -3,12 +3,13 @@ import time
 import shutil
 
 config = {
-    "cpp_single_gcc_std17" : ['g++ main.cpp -o main --std=c++17', './main']
+    "cpp_single_gcc_std17" : ['gcc', 'g++ main.cpp -o main --std=c++17', './main'],
+    "python3_single" : ['python', 'echo skip_compile', 'python main.py'],
 }
 
 def run(judge, code) :
     now = int(time.time())
-    prefix = 'J' + time.strftime("%H%M%S", time.localtime(now))
+    prefix = 'J' + time.strftime("%Y%m%d_%H%M%S", time.localtime(now))
     prefix_folder = 'run/' + prefix + '/'
 
     if not os.path.exists('run') :
@@ -24,10 +25,10 @@ def run(judge, code) :
     cmd = './main ' + prefix
     for p in code :
         cmd += ' "' + '../../' + p[0] + '"'
-        cmd += ' "' + config[p[1]][0] + '"'
-        cmd += ' "' + config[p[1]][1] + '"'
+        for s in config[p[1]] :
+            cmd += ' "' + s + '"'
 
-    # print(cmd)
+    print(cmd)
     print('judge =', judge)
     print('code  =', [p[0] for p in code])
     os.system(cmd)
@@ -40,6 +41,7 @@ def run(judge, code) :
     print('')
 
 os.system('rm -rf run/')
+run('judge/tic_tac_toe.cpp', [['code/tic_tac_toe/random', "cpp_single_gcc_std17"], ['code/tic_tac_toe/py', "python3_single"]])
 run('judge/tic_tac_toe.cpp', [['code/tic_tac_toe/random', "cpp_single_gcc_std17"], ['code/tic_tac_toe/best', "cpp_single_gcc_std17"]])
 run('judge/tic_tac_toe.cpp', [['code/tic_tac_toe/random', "cpp_single_gcc_std17"], ['code/tic_tac_toe/random', "cpp_single_gcc_std17"]])
 run('judge/tic_tac_toe.cpp', [['code/tic_tac_toe/random', "cpp_single_gcc_std17"], ['code/tic_tac_toe/mle', "cpp_single_gcc_std17"]])
