@@ -73,7 +73,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ContestList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 

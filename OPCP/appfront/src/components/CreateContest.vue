@@ -28,16 +28,17 @@ export default {
         Contest: {
           "name": "",
           "creator": "",
+          "description": "Contest Description"
         },
         Msg: "",
         IfSuccess: false,
         Id: 0,
-        Description: "Contest Description"
+        
       }
   },
   methods: {
     ContestSubmit () {
-      CreateContest(this.Contest.name, store.state.num, this.Contest.Description).then(response => {
+      CreateContest(this.Contest.name, store.state.num, this.Contest.description).then(response => {
         this.Msg = "Create a contest successfully!"
         this.IfSuccess = true
       }).catch(error => {

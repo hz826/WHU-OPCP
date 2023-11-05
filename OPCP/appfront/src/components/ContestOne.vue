@@ -19,10 +19,15 @@ export default {
   },
   methods: {
     LoadContest () {
+      console.log(this.ContestId)
       GetDescription(this.ContestId).then(response => {
+        console.log(response.data)
         this.Content = response.data
       })
     }
+  },
+  created: function () {
+    this.LoadContest()
   }
 }
 </script>
