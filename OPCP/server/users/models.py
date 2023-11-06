@@ -23,5 +23,5 @@ class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
     file = models.ForeignKey(FileModel, on_delete=models.CASCADE)
-    status = models.CharField(max_length=30, default="Judging")
+    status = models.CharField(max_length=30, default="Waiting")
     score = models.FloatField(default=0)

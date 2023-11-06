@@ -117,3 +117,17 @@ class SubmissionDetail(generics.RetrieveUpdateAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
+
+
+class GetSubmissionTask(APIView):
+    def get(self, request):
+        try:
+            sub = Submission.objects.filter(status='Waiting').first()
+            # sub = Submission.objects.all()
+            serializer = SubmissionSerializer(sub)
+            return Response(serializer.data)
+        except Submission.DoesNotExist:
+            raise Http404
+        
+
+        

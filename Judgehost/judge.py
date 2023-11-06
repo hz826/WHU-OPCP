@@ -15,7 +15,7 @@ def judge(config, judge, code) :
     shutil.copy('interactive.cpp', prefix_folder)
     shutil.copy('interactive.h', prefix_folder)
     os.chdir(prefix_folder)
-    os.system('g++ main.cpp interactive.cpp -o main -std=c++11 -Wall')
+    os.system('g++ main.cpp interactive.cpp -o main -std=c++17 -Wall')
 
     cmd = './main ' + prefix
     for p in code :
