@@ -12,6 +12,13 @@ export const GetDescription = (variable) => {
     return axios.get(apiurl)
 }
 
+export const GetSubmissions = () => {return axios.get(`http://localhost:8000/api/submissions/`)}
+
+export const GetSubmissionsOne = (variable) => {
+    const apiurl = `http://localhost:8000/api/submissions/${variable}`
+    return axios.get(apiurl)
+}
+
 export const Register = (username, password) => {
     return axios.post(`http://localhost:8000/api/register/`, {'username': username, 'password': password})
 }
@@ -22,3 +29,4 @@ export const Login = (username, password) => {
 export const CreateContest = (name, creator, description) => {
     return axios.post(`http://localhost:8000/api/contests/`, {'name': name, 'creator': creator, 'description': description})
 }
+

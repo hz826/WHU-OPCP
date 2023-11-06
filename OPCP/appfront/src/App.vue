@@ -30,9 +30,12 @@
       <router-link to="/userlist">
         <span class="bordered-text">UserList</span>
       </router-link>
+      <router-link to="/judgelist">
+        <span class="bordered-text">JudgeList</span>
+      </router-link>
       <router-link to="/logout">
         <span class="bordered-text">Logout</span>
-      </router-link>
+      </router-link>    
     </nav>
     <router-view/>
     <h1 v-if="GetState == true">
