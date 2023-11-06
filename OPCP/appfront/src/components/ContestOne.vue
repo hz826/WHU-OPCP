@@ -10,13 +10,17 @@
 
 <script>
 import {GetDescription} from '../api/api.js'
+import store from '../store'
 export default {
   name: 'ContstOne',
   data () {
     return {
       ContestName: this.$route.params.name,
       ContestId: this.$route.query.contestid,
-      Content: []
+      Content: [],
+      submission: [],
+      Status: 'Waiting',
+      socre: 0.0
     }
   },
   methods: {
@@ -40,10 +44,23 @@ export default {
       formData.append('file', file);
       this.axios.post(`http://localhost:8000/api/upload/`, formData).then((response)=>{   
               this.$message.success("Successfully added")  //需要引入elemrnt
+              this.submission = response.data
+              this.axios.post(`http://localhost:8000/api/submissions/`, 
+              {
+                'user': store.state.num, 
+                'contest': this.ContestId, 
+                'file': this.submission.id, 
+                'status': this.Status, 
+                'score': this.score}).then((response)=>{
+                console.log('QWQ')
+              }).catch((error)=>{
+              })
+              
       }).catch((error)=>{
           console.log(error)
               this.$message.warning("Addition failed")
         })
+      
      }
   },
   created: function () {
