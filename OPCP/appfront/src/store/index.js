@@ -20,6 +20,7 @@ const store = new Vuex.Store({
     },
     Clean (state) {
       state.login = false
+      state.num = 0
     }
   },
   plugins: [createPersistedState({

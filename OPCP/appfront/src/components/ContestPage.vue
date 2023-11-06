@@ -6,7 +6,7 @@
       
       <h2>{{contest.name}} | {{contest.creator}}</h2>
       <et @click="getContest(contest.name, contest.id)">Enter</et>
-      <mt v-if="contest.id == GetId()" @click="modifyContest(contest.name, contest.id)">Modify</mt>
+      <mt v-if="contest.creator == GetId()" @click="modifyContest(contest.name, contest.id)">Modify</mt>
       <v-else></v-else>
     </li>
     <h1>Interesting in Contest? Create One!</h1>
