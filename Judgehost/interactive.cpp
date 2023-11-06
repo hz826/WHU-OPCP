@@ -227,7 +227,7 @@ FILE* Itlib::fp_details = NULL;
 FILE* Itlib::fp_score = NULL;
 string Itlib::prefix = "";
 
-function<void(int)> Itlib::playercrashed_handler = [&](int x) {
+function<void(int)> Itlib::playercrashed_handler = [](int x) {
     Itlib::log("[Debug] %s", "playercrashed_handler haven't set\n");
 };
 

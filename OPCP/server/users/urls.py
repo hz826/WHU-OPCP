@@ -22,6 +22,7 @@ urlpatterns = [
 
     path('submissions/', views.SubmissionList.as_view()),
     path('submissions/<int:pk>', views.SubmissionDetail.as_view()),
+    path('gettask/', views.GetSubmissionTask.as_view()),
 ]   
 
 
