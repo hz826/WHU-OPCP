@@ -14,7 +14,7 @@
             <h3>User: <input type="text" v-model="Login.name"></h3>
             <h3>Password:<input type="password" v-model="Login.author"></h3>
         </form>
-        <button type="submit" @click="LoginSubmit()">Login</button>
+        <el-button class="ellogin" @click="LoginSubmit()">Login</el-button>
     </div>
 </div>
 </template>
@@ -96,9 +96,10 @@ input[type="password"] {
     border-radius: 5px;
 }
 
-button[type="submit"] {
+.ellogin {
     border: 2px solid #42b983;
     background-color: #b3dbc9;
+    color: black;
     padding: 10px;
     font-weight: 800;
     font-size: 15px;

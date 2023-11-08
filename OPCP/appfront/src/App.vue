@@ -14,53 +14,55 @@
             <span class="bordered-text">Contest</span>
         </router-link>
         <router-link to="/userlist">
-            <span class="bordered-text">UserList</span>
+            <span class="bordered-text">RankList</span>
         </router-link>
     </nav>
     <nav v-else>
-        <router-link to="/">
-            <span class="bordered-text">Welcome</span>
-        </router-link>
-        <router-link to="/register">
-            <span class="bordered-text">Register</span>
-        </router-link>
         <router-link to="/contest">
             <span class="bordered-text">Contest</span>
         </router-link>
         <router-link to="/userlist">
-            <span class="bordered-text">UserList</span>
+            <span class="bordered-text">RankList</span>
         </router-link>
         <router-link to="/judgelist">
             <span class="bordered-text">JudgeList</span>
+        </router-link>
+        <router-link to="/profile">
+            <span class="bordered-text">Profile</span>
         </router-link>
         <router-link to="/logout">
             <span class="bordered-text">Logout</span>
         </router-link>
     </nav>
     <router-view />
-    <h1 v-if="GetState == true">
-        Welcome, {{ GetName }}!
-    </h1>
-    <h1 v-else>
-        NOT LOGIN YET
-    </h1>
+    <app-footer v-if="footer_show"></app-footer>
 </div>
 </template>
 
 <script>
+import appFooter from './Footer.vue'
 import store from './store'
 
 export default {
     name: 'App',
+    data() {
+        return {
+            footer_show: true
+        }
+    },
+    components: {
+        'app-footer': appFooter,
+    },
+    methods: {
+        footer: function (bool) {
+            this.footer_show = bool;
+        }
+    },
     computed: {
-        GetName() {
-            return store.state.name
-        },
         GetState() {
             return store.state.login
         }
-    },
-    methods: {},
+    }
 }
 </script>
 

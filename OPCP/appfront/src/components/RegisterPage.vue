@@ -14,7 +14,7 @@
             <h3>User: <input type="text" v-model="Register.name"></h3>
             <h3>Password:<input type="password" v-model="Register.author"></h3>
         </form>
-        <button type="submit" @click="RegisterSubmit()">Register</button>
+        <el-button @click="RegisterSubmit()" class="elregister">Register</el-button>
     </div>
 </div>
 </template>
@@ -91,9 +91,10 @@ input[type="password"] {
     border-radius: 5px;
 }
 
-button[type="submit"] {
+.elregister {
     border: 2px solid #42b983;
     background-color: #b3dbc9;
+    color: black;
     padding: 10px;
     font-weight: 800;
     font-size: 15px;

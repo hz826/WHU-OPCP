@@ -12,14 +12,6 @@ export default {
     name: 'HomeView',
     components: {
         HelloWorld
-    },
-    data() {
-        return {
-
-        }
-    },
-    methods: {
-
     }
 }
 </script>

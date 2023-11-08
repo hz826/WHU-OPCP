@@ -2,7 +2,7 @@
 <div>
     <h1>Contest List</h1>
     <el-table :data="contests" class="data_table">
-        <el-table-column prop="name" label="Contest" width="180">
+        <el-table-column prop="name" label="Contest" width="400">
         </el-table-column>
         <el-table-column label="Enter" width="180">
             <template slot-scope="scope">
@@ -15,6 +15,7 @@
             </template>
         </el-table-column>
     </el-table>
+    <el-button @click="CreateContest()" class="create-button">Create One</el-button>
 </div>
 </template>
 
@@ -97,6 +98,17 @@ export default {
     border: 2px solid #ff8c00;
     background-color: #ffa500;
     color: white;
+    padding: 15px;
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 15px;
+}
+
+.create-button {
+    margin-top: 40px;
+    border: 2px solid #42b983;
+    background-color: #b3dbc9;
+    color: black;
     padding: 15px;
     font-weight: 800;
     font-size: 15px;
