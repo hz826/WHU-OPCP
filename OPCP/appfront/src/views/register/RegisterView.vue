@@ -1,12 +1,12 @@
 <template>
-  <div class="register">
+<div class="register">
     <div v-if="Register == false">
-      <RegisterPage />
+        <RegisterPage />
     </div>
     <div v-else>
-      <h2>You have successfully registered!</h2>
+        <h2>You have successfully registered!</h2>
     </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -14,14 +14,14 @@
 import RegisterPage from '@/components/RegisterPage.vue'
 
 export default {
-  name: 'RegisterView',
-  components: {
-    RegisterPage
-  },
-  data() {
-    return {
-      Register: false
+    name: 'RegisterView',
+    components: {
+        RegisterPage
+    },
+    data() {
+        return {
+            Register: false
+        }
     }
-  }
 }
 </script>

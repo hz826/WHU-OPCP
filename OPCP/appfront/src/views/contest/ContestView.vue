@@ -1,21 +1,17 @@
 <template>
-  <div class="contest">
-    <h1>Get involved in the contest and get best score!</h1>
+<div style="display: flex; justify-content: center; align-items: flex-start; height: 100vh;">
     <ContestPage />
-  </div>
+</div>
 </template>
 
 <script>
 // @ is an alias to /src
-import RankList from '@/components/RankList.vue'
 import ContestPage from '@/components/ContestPage.vue'
 
 export default {
-  name: 'Contest',
-  components: {
-    RankList,
-    ContestPage
-  }
+    name: 'Contest',
+    components: {
+        ContestPage
+    }
 }
 </script>
-    

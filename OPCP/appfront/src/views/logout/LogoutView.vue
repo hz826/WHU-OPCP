@@ -7,7 +7,7 @@
 <script>
 import store from '@/store';
 export default {
-name: 'LogoutView',
+    name: 'LogoutView',
     methods: {
         Logout() {
             store.commit('Clean')
@@ -18,11 +18,11 @@ name: 'LogoutView',
 
 <style>
 button[type="submit"] {
-  border: 2px solid #42b983;
-  background-color: #b3dbc9;
-  padding: 10px;
-  font-weight: 800;
-  font-size: 15px;
-  border-radius: 15px;
+    border: 2px solid #42b983;
+    background-color: #b3dbc9;
+    padding: 10px;
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 15px;
 }
 </style>
