@@ -1,5 +1,6 @@
 // appfront/src/api/api.js
 import axiosInstance from './index'
+import store from '@/store';
 
 const axios = axiosInstance
 
@@ -26,7 +27,17 @@ export const Login = (username, password) => {
     return axios.post(`http://localhost:8000/api/login/`, {'username': username, 'password': password})
 }
 
+export const GetToken = (username, password) => {
+    return axios.post(`http://localhost:8000/api/token/`, {'username': username, 'password': password})
+}
+
 export const CreateContest = (name, creator, description) => {
-    return axios.post(`http://localhost:8000/api/contests/`, {'name': name, 'creator': creator, 'description': description})
+    return axios.post(`http://localhost:8000/api/contests/`, {
+        'name': name, 'creator': creator, 'description': description
+        }, {
+        headers: {
+            Authorization: 'Bearer ' + store.state.token,
+        }
+    })
 }
 

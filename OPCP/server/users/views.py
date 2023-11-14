@@ -13,7 +13,7 @@ class UserList(APIView):
             Return all objects.
     '''
     # authentication_classes = [JSONWebTokenAuthentication]
-    # permission_classes = []
+    permission_classes = []
     def get(self, request):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -68,19 +68,19 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         DELETE:
             Delete an object.
     '''
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class ContestList(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
 
 class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
@@ -91,7 +91,7 @@ class FileList(generics.ListAPIView):
 
 
 class FileUpload(generics.CreateAPIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     queryset = FileModel.objects.all()
     serializer_class = FileSerializer
 
@@ -108,13 +108,13 @@ class FileDownload(APIView):
 
 
 class SubmissionList(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
 
 
 class SubmissionDetail(generics.RetrieveUpdateAPIView):
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
 

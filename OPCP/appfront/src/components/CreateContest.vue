@@ -46,6 +46,7 @@ export default {
                 this.Msg = "Create a contest successfully!"
                 this.IfSuccess = true
             }).catch(error => {
+                console.log(store.state.token)
                 this.Msg = "Create contest fails!"
                 this.IfSuccess = false
             });

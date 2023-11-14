@@ -12,7 +12,7 @@
     <div v-if="IfSuccess == false">
         <form action="">
             <h3>User: <input type="text" v-model="Login.name"></h3>
-            <h3>Password:<input type="password" v-model="Login.author"></h3>
+            <h3>Password:<input type="password" v-model="Login.password"></h3>
         </form>
         <el-button class="ellogin" @click="LoginSubmit()">Login</el-button>
     </div>
@@ -22,7 +22,8 @@
 <script>
 import store from '@/store';
 import {
-    Login
+    Login,
+    GetToken
 } from '../api/api.js'
 export default {
     name: 'LoginPage',
@@ -30,7 +31,7 @@ export default {
         return {
             Login: {
                 "name": "",
-                "author": "",
+                "password": "",
             },
             Msg: "",
             IfSuccess: false,
@@ -40,17 +41,20 @@ export default {
     computed: {},
     methods: {
         LoginSubmit() {
-            Login(this.Login.name, this.Login.author).then(response => {
+            Login(this.Login.name, this.Login.password).then(response => {
                 this.Msg = "Login Successfully!"
                 this.IfSuccess = true
                 this.dt = response.data
                 store.commit('Modify', this.Login.name)
                 store.commit('ChangeId', this.dt.id)
-                console.log(store.state.num)
+                GetToken(this.Login.name, this.Login.password).then(response => {
+                    store.commit('ModifyToken', response.data.access)
+                }).catch(error => {
+                })
             }).catch(error => {
                 this.Msg = "Wrong Username or Password"
                 this.IfSuccess = false
-            });
+            })
         }
     }
 }

@@ -8,7 +8,8 @@ const store = new Vuex.Store({
   state: {
     name: 'NOUSER',
     login: false,
-    num: 0
+    num: 0,
+    token: ''
   },
   mutations: {
     Modify (state, name) {
@@ -21,6 +22,9 @@ const store = new Vuex.Store({
     Clean (state) {
       state.login = false
       state.num = 0
+    },
+    ModifyToken (state, token) {
+      state.token = token
     }
   },
   plugins: [createPersistedState({
