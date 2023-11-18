@@ -9,7 +9,9 @@ const store = new Vuex.Store({
     name: 'NOUSER',
     login: false,
     num: 0,
-    token: ''
+    token: '',
+    email: 'mikukuovo@gmail.com',
+    statement: '这个人很懒，什么也没有写'
   },
   mutations: {
     Modify (state, name) {

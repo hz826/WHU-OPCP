@@ -1,8 +1,6 @@
 <template>
 <div>
     <h1>{{ ContestName }}</h1>
-    <h2>Description</h2>
-    <h3>{{ Content.description }}</h3>
     <h2>Modify</h2>
     <textarea rows="4" cols="50"></textarea>
 </div>

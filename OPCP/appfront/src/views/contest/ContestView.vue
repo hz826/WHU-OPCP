@@ -2,6 +2,7 @@
 <div style="display: flex; justify-content: center; align-items: flex-start; height: 100vh;">
     <ContestPage />
 </div>
+
 </template>
 
 <script>
@@ -15,3 +16,7 @@ export default {
     }
 }
 </script>
+
+
+<style>
+</style>

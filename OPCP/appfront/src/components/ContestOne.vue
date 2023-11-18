@@ -1,10 +1,21 @@
 <template>
 <div>
     <h1>{{ ContestName }}</h1>
-    <h2>Description</h2>
-    <h3>{{ Content.description }}</h3>
-    <h2>Upload your code</h2>
-    <input style="width: 74px;" type="file" id="uFile" name="uFile" @change="upload($event)" />
+
+    <div class="limitation">
+        Time limit : 1 second Memory limit : 256 megabytes
+    </div>
+    <div class="divider"></div>
+    <div class="description">
+        <h2>Description</h2>
+        {{ Content.description }}
+    </div>
+    <div class="divider"></div>
+    <div class="upload">
+        <h2>Upload Your Code</h2>
+        <input class="button" type="file" id="uFile" name="uFile" @change="upload($event)" />
+    </div>
+    <div class="divider"></div>
 </div>
 </template>
 
@@ -15,6 +26,7 @@ import {
 import store from '../store'
 export default {
     name: 'ContstOne',
+    componets: {},
     data() {
         return {
             ContestName: this.$route.params.name,
@@ -27,7 +39,6 @@ export default {
     },
     methods: {
         LoadContest() {
-            console.log(this.ContestId)
             GetDescription(this.ContestId).then(response => {
                 console.log(response.data)
                 this.Content = response.data
@@ -53,9 +64,11 @@ export default {
                     'file': this.submission.id,
                     'status': this.Status,
                     'score': this.score
-                }).then((response) => {
-                    console.log('QWQ')
-                }).catch((error) => {})
+                }, {
+                    headers: {
+                        Authorization: 'Bearer ' + store.state.token,
+                    }
+                }).then((response) => {}).catch((error) => {})
 
             }).catch((error) => {
                 console.log(error)
@@ -69,3 +82,55 @@ export default {
     }
 }
 </script>
+
+<style>
+.divider {
+    margin-top: 40px;
+    border-bottom: 4px solid #42b983;
+    /* 添加分割线样式 */
+    margin-bottom: 40px;
+    width: 1000px;
+    margin-left: 300px;
+    /* 调整分割线与上下内容的间距 */
+}
+
+input[type="file"]::file-selector-button {
+    border-radius: 15px;
+    padding: 10px 50px;
+    background-color: #b3dbc9;
+}
+
+.button {
+    border: 2px solid #42b983;
+    background-color: #b3dbc9;
+    color: rgb(37, 152, 160);
+    padding: 20px 20;
+    /* 调整按钮的长度 */
+    font-weight: 800px;
+    font-size: 14px;
+    border-radius: 15px;
+
+}
+
+.limitation {
+    /* 添加左边距 */
+}
+
+.description {
+    text-align: left;
+    padding-left: 300px;
+    /* 添加左边距 */
+}
+
+.upload {
+    text-align: center;
+}
+
+h1 {
+    font-size: 40px;
+}
+
+h2 {
+    font-size: 30px;
+}
+</style>

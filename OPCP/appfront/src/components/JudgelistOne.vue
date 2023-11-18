@@ -1,9 +1,15 @@
 <template>
-<div class="judgelistone">
-    <h2>Judge id: {{submission.id}}</h2>
-    <h3>User: {{submission.user}} Contest: {{submission.contest}} Status:{{submission.status}}</h3>
-    <h3 v-if="submission.status == 'OK'">Score: {{submission.score}}</h3>
-    <a :href="linkURL">Downloadfile</a>
+<div>
+    <div class="container">
+        <div class="judge-info">
+            <p><strong>Judge id:</strong> {{ submission.id }}</p>
+            <p><strong>User:</strong> {{ submission.user }}</p>
+            <p><strong>Contest:</strong> {{ submission.contest }}</p>
+            <p><strong>Status:</strong> {{ submission.status }}</p>
+            <p v-if="submission.status == 'OK'"><strong>Score:</strong> {{ submission.score }}</p>
+        </div>
+    </div>
+    <a :href="linkURL" class="download-button">Downloadfile</a>
 </div>
 </template>
 
@@ -34,14 +40,32 @@ export default {
 </script>
 
 <style>
-et {
-    color: #1b2d9f;
-    font-size: 20px;
-    font-weight: 600;
-    border: 3px solid #42b983;
-    border-radius: 10px;
+p {
+    font-size: 25px;
+}
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.judge-info {
+  text-align: left; /* Set text alignment to left */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.judge-info p {
+    margin: 10px 0;
+}
+
+.download-button {
+    border: 2px solid #42b983;
     background-color: #b3dbc9;
-    padding: 10px;
-    margin: 10px;
+    color: black;
+    padding: 15px;
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 15px;
 }
 </style>

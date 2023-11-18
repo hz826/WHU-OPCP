@@ -1,27 +1,30 @@
 <template>
 <div>
     <h1>User Information</h1>
-    <div class="user-details">
-        <div class="user-avatar">
-            <img :src="user.avatar" alt="User Avatar" />
+    <div style="display: flex; justify-content: center; align-items: flex-start; height: 100vh;">
+
+        <div class="user-details">
+            <div class="user-avatar">
+                <img :src="user.avatar" alt="User Avatar" />
+            </div>
+            <div class="user-info">
+                <p><strong>Name:</strong> {{ user.name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Statement:</strong> {{ user.statement }}</p>
+            </div>
         </div>
-        <div class="user-info">
-            <p><strong>Name:</strong> {{ user.name }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Statement:</strong> {{ user.statement }}</p>
-        </div>     
     </div>
-    <!-- <el-button @click="ModifyProfile()" class="create-button">Modify my Profile</el-button> -->
 </div>
 </template>
-  
+
 <script>
 import store from '../store'
 export default {
+    name: 'ProfileOne',
     data() {
         return {
             user: {
-                name: store.state.name,
+                name: this.$route.params.name,
                 email: store.state.email,
                 statement: store.state.statement,
                 avatar: 'https://mikukuovo.github.io/images/avatar.png'
@@ -30,8 +33,7 @@ export default {
     }
 };
 </script>
-  
-  
+
 <style scoped>
 .user-details {
     display: flex;

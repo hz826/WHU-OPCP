@@ -91,7 +91,7 @@ class FileList(generics.ListAPIView):
 
 
 class FileUpload(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = FileModel.objects.all()
     serializer_class = FileSerializer
 
@@ -108,13 +108,13 @@ class FileDownload(APIView):
 
 
 class SubmissionList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
 
 
 class SubmissionDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
 

@@ -1,12 +1,8 @@
 <template>
-<div>
+<div style="display: flex; justify-content: center; align-items: flex-start; height: 100vh;">
     <ProfilePage />
 </div>
-</template>
-
-    
-        
-        
+</template>    
     
 <script>
 // @ is an alias to /src

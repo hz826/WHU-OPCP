@@ -1,13 +1,18 @@
 <template>
 <div class="ranklist">
-    <h1>
-        ID | Username
-    </h1>
-    <h2>
-        <li v-for="(user, index) in users" :key="index" style="display:block">
-            {{index + 1}} | {{user.username}}
-        </li>
-    </h2>
+    <h1>Ranklist</h1>
+    <el-table :data="users" class="data_table">
+        <el-table-column prop="username" label="User name" width="270">
+        </el-table-column>
+        <el-table-column prop="id" label="Email" width="180">
+        </el-table-column>
+
+        <el-table-column label="Enter" width="180">
+            <template slot-scope="scope">
+                <el-button type="primary" @click="GetProfile(scope.row.username, scope.row.id)" class="enter-button">View</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
 </div>
 </template>
 
@@ -28,6 +33,14 @@ export default {
                 this.users = response.data
             })
         },
+        GetProfile(name, email) {
+            this.$router.push({
+                path: `/profile/${name}`,
+                query: {
+                    email: email
+                }
+            })
+        },
     },
     created: function () {
         this.LoadUsers()
@@ -36,21 +49,19 @@ export default {
 </script>
 
 <style scoped>
-h3 {
-    margin: 40px 0 0;
+.data_table {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-a {
-    color: #42b983;
+.enter-button {
+    border: 2px solid #42b983;
+    background-color: #b3dbc9;
+    color: black;
+    padding: 15px;
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 15px;
 }
 </style>
