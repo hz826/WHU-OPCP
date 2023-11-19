@@ -30,26 +30,24 @@
         <el-table-column label="" width="180">
             <template slot-scope="scope">
                 <el-button type="primary" @click="getCode(scope.row.id)" class="enter-button">Download File</el-button>
-                
+
             </template>
         </el-table-column>
         <el-table-column label="" width="180">
             <template slot-scope="scope">
                 <el-button type="primary" @click="getJudgeDetail(scope.row.id)" class="enter-button">Details</el-button>
-                
+
             </template>
         </el-table-column>
-        
+
     </el-table>
 </div>
 </template>
 
 <script>
 import {
-    GetSubmissions,
-    GetSubmissionsOne
+    GetSubmissions
 } from '../api/api.js'
-// import { GetSubmissionsOne } from '../api/api.js';
 
 export default {
     name: 'JudgelistPage',

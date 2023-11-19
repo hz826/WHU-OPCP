@@ -21,6 +21,11 @@ export const ModifyDescription = (variable, description) => {
         }})
 }
 
+export const GetJudge = (variable) => {
+    const apiurl = `http://localhost:8000/api/getjudge/${variable}`
+    return axios.get(apiurl)
+}
+
 export const GetSubmissions = () => {return axios.get(`http://localhost:8000/api/submissions/`)}
 
 export const GetSubmissionsOne = (variable) => {
