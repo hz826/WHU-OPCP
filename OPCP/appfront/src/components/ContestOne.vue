@@ -1,7 +1,6 @@
 <template>
 <div>
     <h1>{{ ContestName }}</h1>
-    <h2>zc here</h2>
     <div class="limitation">
         Time limit : 1 second Memory limit : 256 megabytes
     </div>
@@ -21,7 +20,7 @@
 
 <script>
 import {
-    GetDescription
+    GetDescription,
 } from '../api/api.js'
 import store from '../store'
 export default {
