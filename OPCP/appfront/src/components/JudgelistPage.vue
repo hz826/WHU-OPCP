@@ -1,7 +1,7 @@
 <template>
 <div>
     <h1>Judgelist</h1>
-    
+
     <el-table :data="submissions" class="data_table">
         <el-table-column prop="id" label="Submission Id" width="180">
         </el-table-column>
@@ -10,7 +10,7 @@
         <el-table-column prop="contest" label="Contest" width="180">
         </el-table-column>
         <el-table-column prop="status" label="Status" width="180">
-            <template slot-scope="scope">              
+            <template slot-scope="scope">
                 <div v-if="scope.row.status == 'Waiting'">
                     {{scope.row.status}}
                     <i class="el-icon-more"></i>
@@ -29,15 +29,21 @@
         </el-table-column>
         <el-table-column label="" width="180">
             <template slot-scope="scope">
-                <el-button type="primary" @click="getJudgeDetail(scope.row.id)" class="enter-button">Details</el-button>
+                <el-button type="primary" @click="getCode(scope.row.id)" class="enter-button">Download File</el-button>
+
             </template>
         </el-table-column>
+        <el-table-column label="" width="180">
+            <template slot-scope="scope">
+                <el-button type="primary" @click="getJudgeDetail(scope.row.id)" class="enter-button">Details</el-button>
+
+            </template>
+        </el-table-column>
+
     </el-table>
 </div>
 </template>
 
-    
-    
 <script>
 import {
     GetSubmissions
@@ -47,6 +53,7 @@ export default {
     name: 'JudgelistPage',
     data() {
         return {
+            linkURL: '',
             submissions: [],
         }
     },
@@ -56,20 +63,27 @@ export default {
             GetSubmissions().then(response => {
                 this.submissions = response.data
             })
+
         },
+
         getJudgeDetail(judgeid) {
             this.$router.push({
                 path: `/judgelist/${judgeid}`,
             })
         },
+
+        getCode(judgeid) {
+            this.linkURL = `http://localhost:8000/api/download/${judgeid}`;
+            window.open(this.linkURL);
+        }
     },
     created: function () {
         this.LoadSubmissions()
     }
+
 }
 </script>
-          
-    
+
 <style scoped>
 .data_table {
     font-family: Avenir, Helvetica, Arial, sans-serif;

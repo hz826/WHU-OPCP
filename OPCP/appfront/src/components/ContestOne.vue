@@ -1,7 +1,6 @@
 <template>
 <div>
     <h1>{{ ContestName }}</h1>
-    <h2>zc here</h2>
     <div class="limitation">
         Time limit : 1 second Memory limit : 256 megabytes
     </div>
@@ -21,7 +20,7 @@
 
 <script>
 import {
-    GetDescription
+    GetDescription,
 } from '../api/api.js'
 import store from '../store'
 export default {
@@ -58,12 +57,10 @@ export default {
             this.axios.post(`http://localhost:8000/api/upload/`, formData).then((response) => {
                 this.$message.success("Successfully added")
                 this.submission = response.data
-                this.axios.post(`http://localhost:8000/api/submissions/`, {
+                this.axios.post(`http://localhost:8000/api/submit/`, {
                     'user': store.state.num,
                     'contest': this.ContestId,
                     'file': this.submission.id,
-                    'status': this.Status,
-                    'score': this.score
                 }, {
                     headers: {
                         Authorization: 'Bearer ' + store.state.token,

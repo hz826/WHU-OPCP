@@ -6,4 +6,7 @@
 .vscode
 __pycache__
 *.pdf
-db.sqlite3
+server/db.sqlite3
+server/users/migrations
+server/users/__pycache__
+server/uploads
