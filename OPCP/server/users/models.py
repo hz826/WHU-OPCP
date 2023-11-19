@@ -48,4 +48,8 @@ class Judge(models.Model):
     file2 = models.ForeignKey(FileModel, on_delete=models.CASCADE)
     status = models.CharField(max_length=30, default="Waiting")
     score = models.FloatField(default=0)
-    detail = models.TextField(default='', max_length=10000000)
+    detail = models.ForeignKey(
+        FileModel, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_related",
+        related_query_name="%(app_label)s_%(class)ss",
+    )
