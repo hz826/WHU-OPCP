@@ -164,3 +164,10 @@ class JudgeDetail(generics.RetrieveUpdateAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = JudgeSerializer
+
+
+class GetJudgeOfSubmission(APIView):
+    def get(self, request, pk):
+        judgeset = Judge.objects.filter(submission__id=pk)
+        serializer = JudgeSerializer(judgeset, many=True)
+        return Response(serializer.data)
