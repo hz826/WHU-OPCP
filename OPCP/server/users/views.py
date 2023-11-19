@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.http import Http404, FileResponse
 from django.contrib.auth import authenticate
-from .models import User, Contest, FileModel, Submission
-from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer
+from .models import User, Contest, FileModel, Submission, Judge, UserInContest
+from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer, JudgeSerializer
 
 class UserList(APIView):
     '''
@@ -13,7 +13,7 @@ class UserList(APIView):
             Return all objects.
     '''
     # authentication_classes = [JSONWebTokenAuthentication]
-    permission_classes = []
+    # permission_classes = []
     def get(self, request):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -68,19 +68,19 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         DELETE:
             Delete an object.
     '''
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class ContestList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
 
 class ContestDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
 
@@ -107,7 +107,7 @@ class FileDownload(APIView):
         return FileResponse(open(file_obj.file.path, 'rb'))
 
 
-class SubmissionList(generics.ListCreateAPIView):
+class SubmissionList(generics.ListAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
@@ -119,15 +119,55 @@ class SubmissionDetail(generics.RetrieveUpdateAPIView):
     serializer_class = SubmissionSerializer
 
 
-class GetSubmissionTask(APIView):
+class Submit(APIView):
+    def post(self, request):
+        user_id = request.data.get('user')
+        contest_id = request.data.get('contest')
+        file_id = request.data.get('file')
+        user = User.objects.get(id=user_id)
+        contest = Contest.objects.get(id=contest_id)
+        file = FileModel.objects.get(id=file_id)
+        if UserInContest.objects.filter(user=user):
+            rel = UserInContest.objects.get(user=user)
+            rel.file = file
+            rel.save()
+        else:
+            rel = UserInContest.objects.create(user=user, contest=contest, file=file)
+        sub = Submission.objects.create(user=user, contest=contest, file=file)
+        userset = UserInContest.objects.filter(contest=contest)
+        for it in userset:
+            user2 = it.user
+            if user == user2:
+                continue
+            file2 = it.file
+            Judge.objects.create(submission=sub, user2=user2, file2=file2)
+        serializer = SubmissionSerializer(sub)
+        return Response(serializer.data)
+            
+        
+class GetTask(APIView):
     def get(self, request):
         try:
-            sub = Submission.objects.filter(status='Waiting').first()
-            # sub = Submission.objects.all()
-            serializer = SubmissionSerializer(sub)
+            judge = Judge.objects.filter(status='Waiting').first()
+            serializer = JudgeSerializer(judge)
             return Response(serializer.data)
-        except Submission.DoesNotExist:
+        except Judge.DoesNotExist:
             raise Http404
         
 
-        
+class JudgeList(generics.ListAPIView):
+    queryset = Judge.objects.all()
+    serializer_class = JudgeSerializer
+
+
+class JudgeDetail(generics.RetrieveUpdateAPIView):
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Submission.objects.all()
+    serializer_class = JudgeSerializer
+
+
+class GetJudgeOfSubmission(APIView):
+    def get(self, request, pk):
+        judgeset = Judge.objects.filter(submission__id=pk)
+        serializer = JudgeSerializer(judgeset, many=True)
+        return Response(serializer.data)
