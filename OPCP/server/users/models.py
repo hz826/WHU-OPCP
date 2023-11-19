@@ -13,12 +13,6 @@ class User(AbstractUser):
         verbose_name_plural = verbose_name
 
 
-class Contest(models.Model):
-    name = models.CharField(max_length=50)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.TextField(default='', max_length=10000)
-
-
 class FileModel(models.Model):
     filename = models.CharField(max_length=50)
     file = models.FileField(upload_to='uploads/%Y/%m/%d/')
@@ -27,10 +21,18 @@ class FileModel(models.Model):
     #     db_table = 'files_storage'
 
 
+class Contest(models.Model):
+    name = models.CharField(max_length=50)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField(default='', max_length=10000)
+    judger = models.ForeignKey(FileModel, on_delete=models.CASCADE)
+
+
 class UserInContest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
     file = models.ForeignKey(FileModel, on_delete=models.CASCADE)
+    score = models.FloatField(default=0)
 
 
 class Submission(models.Model):

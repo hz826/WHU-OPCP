@@ -27,7 +27,10 @@ urlpatterns = [
     
     path('gettask/', views.GetTask.as_view()),
     path('judges/', views.JudgeList.as_view()),
-    path('judges/<int:pk>', views.JudgeDetail.as_view())
+    path('judges/<int:pk>', views.JudgeDetail.as_view()),
+
+    path('contests/<int:pk>/ranklist/', views.Ranklist.as_view()),
+    path('updatescore/', views.UpdateScore.as_view()),
 ]   
 
 
