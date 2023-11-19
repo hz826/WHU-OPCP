@@ -89,8 +89,8 @@ export default {
     border-bottom: 4px solid #42b983;
     /* 添加分割线样式 */
     margin-bottom: 40px;
-    width: 1000px;
     margin-left: 300px;
+    margin-right: 300px;
     /* 调整分割线与上下内容的间距 */
 }
 
@@ -119,6 +119,7 @@ input[type="file"]::file-selector-button {
 .description {
     text-align: left;
     padding-left: 300px;
+    padding-right: 300px;
     /* 添加左边距 */
 }
 

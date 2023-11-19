@@ -11,9 +11,10 @@
     </h1>
     <div v-if="IfSuccess == false">
         <form action="">
-            <h3>ContestName: <input type="text" v-model="Contest.name"></h3>
-            <h3>ContestDescription:</h3>
-            <textarea v-model="Contest.description" rows="4" cols="50"></textarea>
+            <h3>Contest Name</h3>
+            <input type="text" v-model="Contest.name">
+            <h3>Contest Description</h3>
+            <el-input :rows="8" type="textarea" class="textarea" v-model="Contest.description"></el-input>
         </form>
         <button type="submit" @click="ContestSubmit()">Submit</button>
     </div>
@@ -92,6 +93,7 @@ button[type="submit"] {
     padding: 10px;
     font-weight: 800;
     font-size: 15px;
+    margin-top: 50px;
     border-radius: 15px;
 }
 
@@ -101,5 +103,12 @@ RegisterTure {
 
 RegisterFalse {
     color: red;
+}
+.textarea {
+    width: 50%;
+    height: 252px;
+    border: 2px solid #42b983;
+    font-size: 20px;
+    border-radius: 5px;
 }
 </style>

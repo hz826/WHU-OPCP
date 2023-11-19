@@ -1,6 +1,7 @@
 <template>
 <div>
     <h1>Judgelist</h1>
+    
     <el-table :data="submissions" class="data_table">
         <el-table-column prop="id" label="Submission Id" width="180">
         </el-table-column>
@@ -9,6 +10,20 @@
         <el-table-column prop="contest" label="Contest" width="180">
         </el-table-column>
         <el-table-column prop="status" label="Status" width="180">
+            <template slot-scope="scope">              
+                <div v-if="scope.row.status == 'Waiting'">
+                    {{scope.row.status}}
+                    <i class="el-icon-more"></i>
+                </div>
+                <div v-else-if="scope.row.status == 'Judging'">
+                    {{scope.row.status}}
+                    <i class="el-icon-refresh"></i>
+                </div>
+                <div v-else>
+                    {{scope.row.status}}
+                    <i class="el-icon-check"></i>
+                </div>
+            </template>
         </el-table-column>
         <el-table-column prop="score" label="Score" width="180">
         </el-table-column>

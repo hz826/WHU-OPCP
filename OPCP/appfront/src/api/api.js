@@ -13,6 +13,14 @@ export const GetDescription = (variable) => {
     return axios.get(apiurl)
 }
 
+export const ModifyDescription = (variable, description) => {
+    const apiurl = `http://localhost:8000/api/contests/${variable}`
+    return axios.patch(apiurl, {'description': description}, {
+        headers: {
+            Authorization: 'Bearer ' + store.state.token,
+        }})
+}
+
 export const GetSubmissions = () => {return axios.get(`http://localhost:8000/api/submissions/`)}
 
 export const GetSubmissionsOne = (variable) => {
