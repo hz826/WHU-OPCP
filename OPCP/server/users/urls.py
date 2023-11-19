@@ -22,7 +22,11 @@ urlpatterns = [
 
     path('submissions/', views.SubmissionList.as_view()),
     path('submissions/<int:pk>', views.SubmissionDetail.as_view()),
-    path('gettask/', views.GetSubmissionTask.as_view()),
+    path('submit/', views.Submit.as_view()),
+    
+    path('gettask/', views.GetTask.as_view()),
+    path('judges/', views.JudgeList.as_view()),
+    path('judges/<int:pk>', views.JudgeDetail.as_view())
 ]   
 
 
