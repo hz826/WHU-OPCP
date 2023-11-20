@@ -13,6 +13,7 @@ import ModifyContest from '../components/ModifyContest.vue'
 import JudgelistOne from '../components/JudgelistOne.vue'
 import ProfileView from '../views/profile/ProfileView.vue'
 import ProfileOne from '../components/ProfileOne.vue'
+import ModifyProfile from '../components/ModifyProfile.vue'
 
 Vue.use(VueRouter)
 
@@ -81,6 +82,11 @@ const routes = [
     path: '/profile/:name',
     name: 'profileone',
     component: ProfileOne
+  },
+  {
+    path: '/modifyprofile',
+    name: 'modifyprofile',
+    component: ModifyProfile
   },
 ]
 

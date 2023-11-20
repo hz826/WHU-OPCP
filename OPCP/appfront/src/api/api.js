@@ -6,6 +6,11 @@ const axios = axiosInstance
 
 export const GetUserList = () => {return axios.get(`http://localhost:8000/api/users/`)}
 
+export const GetUser = (variable) => {
+    const apiurl = `http://localhost:8000/api/users/${variable}`
+    return axios.get(apiurl)
+}
+
 export const GetContestList = () => {return axios.get('http://localhost:8000/api/contests/')}
 
 export const GetDescription = (variable) => {
@@ -44,9 +49,9 @@ export const GetToken = (username, password) => {
     return axios.post(`http://localhost:8000/api/token/`, {'username': username, 'password': password})
 }
 
-export const CreateContest = (name, creator, description) => {
+export const CreateContest = (name, creator, description, judger) => {
     return axios.post(`http://localhost:8000/api/contests/`, {
-        'name': name, 'creator': creator, 'description': description
+        'name': name, 'creator': creator, 'description': description, 'judger': judger
         }, {
         headers: {
             Authorization: 'Bearer ' + store.state.token,

@@ -9,12 +9,12 @@
             <p><strong>Name:</strong> {{ user.name }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Statement:</strong> {{ user.statement }}</p>
-        </div>     
+        </div>
     </div>
-    <!-- <el-button @click="ModifyProfile()" class="create-button">Modify my Profile</el-button> -->
+    <el-button @click="ModifyProfile()" class="create-button">Modify my Profile</el-button>
 </div>
 </template>
-  
+
 <script>
 import store from '../store'
 export default {
@@ -26,12 +26,18 @@ export default {
                 statement: store.state.statement,
                 avatar: 'https://mikukuovo.github.io/images/avatar.png'
             }
-        };
+        }
+    },
+    methods: {
+        ModifyProfile() {
+            this.$router.push({
+                path: `/modifyprofile`,
+            })
+        }
     }
 };
 </script>
-  
-  
+
 <style scoped>
 .user-details {
     display: flex;

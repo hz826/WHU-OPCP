@@ -16,7 +16,11 @@
             <h3>Contest Description</h3>
             <el-input :rows="8" type="textarea" class="textarea" v-model="Contest.description"></el-input>
         </form>
-        <button type="submit" @click="ContestSubmit()">Submit</button>
+        <div class="upload">
+            <h2>Upload Your Code</h2>
+            <input class="button" type="file" id="uFile" name="uFile" @change="upload($event)" />
+        </div>
+        <el-button class="submit" @click="ContestSubmit()">Submit</el-button>
     </div>
 </div>
 </template>
@@ -38,20 +42,38 @@ export default {
             Msg: "",
             IfSuccess: false,
             Id: 0,
-
+            submission: '',
         }
     },
     methods: {
         ContestSubmit() {
-            CreateContest(this.Contest.name, store.state.num, this.Contest.description).then(response => {
+            CreateContest(this.Contest.name, store.state.num, this.Contest.description, this.submission.id).then(response => {
                 this.Msg = "Create a contest successfully!"
                 this.IfSuccess = true
             }).catch(error => {
-                console.log(store.state.token)
                 this.Msg = "Create contest fails!"
                 this.IfSuccess = false
-            });
+            })
         },
+        upload(e) {
+            var that = this
+            var files = document.getElementById('uFile').value;
+            if (!/\.(c|cpp|py)$/i.test(files)) {
+                this.$message.warning("Must be .c/.cpp/.py file")
+                return false;
+            }
+            let file = e.target.files[0]
+            let formData = new FormData()
+            formData.append('filename', 'mdlxr');
+            formData.append('file', file);
+            this.axios.post(`http://localhost:8000/api/upload/`, formData).then((response) => {
+                this.$message.success("Successfully added")
+                this.submission = response.data
+            }).catch((error) => {
+                console.log(error)
+                this.$message.warning("Addition failed")
+            })
+        }
     }
 }
 </script>
@@ -87,7 +109,7 @@ input[type="text"] {
     border-radius: 5px;
 }
 
-button[type="submit"] {
+.submit {
     border: 2px solid #42b983;
     background-color: #b3dbc9;
     padding: 10px;
@@ -104,6 +126,7 @@ RegisterTure {
 RegisterFalse {
     color: red;
 }
+
 .textarea {
     width: 50%;
     height: 252px;

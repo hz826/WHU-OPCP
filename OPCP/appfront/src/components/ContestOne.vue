@@ -71,7 +71,6 @@ export default {
                 console.log(error)
                 this.$message.warning("Addition failed")
             })
-
         }
     },
     created: function () {
