@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from django.http import Http404, FileResponse
 from django.contrib.auth import authenticate
 from .models import User, Contest, FileModel, Submission, Judge, UserInContest
-from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer, JudgeSerializer
+from .serializers import UserSerializer, ContestSerializer, FileSerializer, SubmissionSerializer, JudgeSerializer, UserInContestSerializer
 
 class UserList(APIView):
     '''
@@ -170,4 +170,23 @@ class GetJudgeOfSubmission(APIView):
     def get(self, request, pk):
         judgeset = Judge.objects.filter(submission__id=pk)
         serializer = JudgeSerializer(judgeset, many=True)
+        return Response(serializer.data)
+    
+
+class Ranklist(APIView):
+    def get(self, request, pk):
+        result = UserInContest.objects.filter(contest__id=pk)
+        serializer = UserInContestSerializer(result, many=True)
+        return Response(serializer.data)
+    
+
+class UpdateScore(APIView):
+    def post(self, request):
+        user_id = request.data.get('user')
+        contest_id = request.data.get('contest')
+        score = request.data.get('score')
+        info = UserInContest.objects.get(user__id=user_id, contest__id=contest_id)
+        info.score = score
+        info.save()
+        serializer = UserInContestSerializer(info)
         return Response(serializer.data)
