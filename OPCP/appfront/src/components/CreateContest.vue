@@ -17,7 +17,7 @@
             <el-input :rows="8" type="textarea" class="textarea" v-model="Contest.description"></el-input>
         </form>
         <div class="upload">
-            <h2>Upload Your Code</h2>
+            <h2>Upload Your Judger</h2>
             <input class="button" type="file" id="uFile" name="uFile" @change="upload($event)" />
         </div>
         <el-button class="submit" @click="ContestSubmit()">Submit</el-button>
