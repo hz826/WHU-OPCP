@@ -8,7 +8,7 @@ config = {
     "python3_single" : ['python', 'echo skip_compile', 'python main.py'],
 }
 
-url = 'http://127.0.0.1:8000'
+url = 'http://10.255.54.33:8000/'
 
 while True :
     sleep(1)
@@ -29,22 +29,27 @@ while True :
     contest = contest.json()
     judger_id = contest['judger']
 
+    if not os.path.exists('judge/player1'):
+        os.mkdir('judge/player1')
     r = requests.get(url+'/api/download/{id}'.format(id=file1_id))
     if(r.status_code != 200):
         data = {'status': 'Error'}
         requests.patch(url+'/api/submissions/{id}'.format(id=sub_id), data=data)
         continue
     content = r.content
-    with open('judge/player1.cpp', 'wb') as f:
+    with open('judge/player1/main.cpp', 'wb') as f:
         f.write(content)
 
+
+    if not os.path.exists('judge/player2'):
+        os.mkdir('judge/player2')
     r = requests.get(url+'/api/download/{id}'.format(id=file2_id))
     if(r.status_code != 200):
         data = {'status': 'Error'}
         requests.patch(url+'/api/judges/{id}'.format(id=jud_id), data=data)
         continue
     content = r.content
-    with open('judge/player2.cpp', 'wb') as f:
+    with open('judge/player2/main.cpp', 'wb') as f:
         f.write(content)
 
     r = requests.get(url+'/api/download/{id}'.format(id=judger_id))
@@ -57,7 +62,7 @@ while True :
         f.write(content)
     data = {'status': 'Judging'}
     requests.patch(url+'/api/submissions/{id}'.format(id=sub_id), data=data)
-    res = judge(config, 'judge/judger.cpp', [['judge/player1.cpp', "cpp_single_gcc_std17"], ['judge/player2.cpp', "cpp_single_gcc_std17"]])
+    res = judge(config, 'judge/judger.cpp', [['judge/player1', "cpp_single_gcc_std17"], ['judge/player2', "cpp_single_gcc_std17"]])
     print(res)
     while True:
         1
