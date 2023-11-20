@@ -30,6 +30,7 @@ urlpatterns = [
     path('judges/<int:pk>', views.JudgeDetail.as_view()),
 
     path('contests/<int:pk>/ranklist/', views.Ranklist.as_view()),
+    path('getscore/', views.GetScore.as_view()),
     path('updatescore/', views.UpdateScore.as_view()),
 ]   
 

@@ -180,6 +180,15 @@ class Ranklist(APIView):
         return Response(serializer.data)
     
 
+class GetScore(APIView):
+    def post(self, request):
+        user_id = request.data.get('user')
+        contest_id = request.data.get('contest')
+        info = UserInContest.objects.get(user__id=user_id, contest__id=contest_id)
+        serializer = UserInContestSerializer(info)
+        return Response(serializer.data)
+
+
 class UpdateScore(APIView):
     def post(self, request):
         user_id = request.data.get('user')
