@@ -1,5 +1,6 @@
 import os
 import requests
+from time import sleep
 from judge import judge
 
 config = {
@@ -10,6 +11,7 @@ config = {
 url = 'http://127.0.0.1:8000'
 
 while True :
+    sleep(1)
     jud = requests.get(url+'/api/gettask/', auth=('user', 'pass'))
     if(jud.status_code != 200):
         continue
@@ -17,12 +19,14 @@ while True :
     jud_id = jud['id']
     sub_id = jud['submission']
     sub = requests.get(url+'/api/submissions/{id}'.format(id=sub_id))
+    sub = sub.json()
     contest_id = sub['contest']
     user1_id = sub['user']
     file1_id = sub['file']
     user2_id = jud['user2']
-    file2_id = jud['file']
+    file2_id = jud['file2']
     contest = requests.get(url+'/api/contests/{id}'.format(id=contest_id))
+    contest = contest.json()
     judger_id = contest['judger']
 
     r = requests.get(url+'/api/download/{id}'.format(id=file1_id))
