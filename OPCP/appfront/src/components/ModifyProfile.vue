@@ -14,7 +14,7 @@
         <input type="text" v-model="Profile.description">
     </div>
     <div>
-        <el-button class="submit" @click="ContestSubmit()">Submit</el-button>
+        <el-button class="submit" @click="ModifyProfile()">Submit</el-button>
     </div>
 </div>
 </template>
@@ -35,6 +35,7 @@ export default {
                 "email": "",
                 "description": ""
             },
+            variable: ''
         }
     },
     methods: {
@@ -45,6 +46,15 @@ export default {
             })
 
         },
+        ModifyProfile() {
+            this.variable = store.state.num
+            const apiurl = `http://localhost:8000/api/users/${this.variable}`
+            this.axios.patch(apiurl, {
+                'username': this.Profile.username,
+                'email': this.Profile.email,
+                'description': this.Profile.description
+            })
+        }
     },
     created: function () {
         this.GetUser()

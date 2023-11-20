@@ -3,12 +3,12 @@
     <h1>User Information</h1>
     <div class="user-details">
         <div class="user-avatar">
-            <img :src="user.avatar" alt="User Avatar" />
+            <img :src="avatar" alt="User Avatar" />
         </div>
         <div class="user-info">
-            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Name:</strong> {{ user.username }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Statement:</strong> {{ user.statement }}</p>
+            <p><strong>Statement:</strong> {{ user.description }}</p>
         </div>
     </div>
     <el-button @click="ModifyProfile()" class="create-button">Modify my Profile</el-button>
@@ -17,15 +17,19 @@
 
 <script>
 import store from '../store'
+import {
+    GetProfile,
+} from '../api/api.js'
 export default {
     data() {
         return {
             user: {
-                name: store.state.name,
+                username: store.state.name,
                 email: store.state.email,
-                statement: store.state.statement,
-                avatar: 'https://mikukuovo.github.io/images/avatar.png'
-            }
+                description: store.state.statement
+            },
+            userid: store.state.num,
+            avatar: 'https://mikukuovo.github.io/images/avatar.png'
         }
     },
     methods: {
@@ -33,7 +37,17 @@ export default {
             this.$router.push({
                 path: `/modifyprofile`,
             })
+        },
+        GetProfile() {
+            GetProfile(this.userid).then(response => {
+                console.log(response.data)
+                console.log(this.userid)
+                this.user = response.data
+            })
         }
+    },
+    created: function () {
+        this.GetProfile()
     }
 };
 </script>

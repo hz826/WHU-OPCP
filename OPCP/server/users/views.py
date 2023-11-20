@@ -162,7 +162,7 @@ class JudgeList(generics.ListAPIView):
 
 class JudgeDetail(generics.RetrieveUpdateAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Submission.objects.all()
+    queryset = Judge.objects.all()
     serializer_class = JudgeSerializer
 
 

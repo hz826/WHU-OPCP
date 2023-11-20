@@ -25,7 +25,7 @@
             <span class="bordered-text">RankList</span>
         </router-link>
         <router-link to="/judgelist">
-            <span class="bordered-text">JudgeList</span>
+            <span class="bordered-text">SubmissionList</span>
         </router-link>
         <router-link to="/profile">
             <span class="bordered-text">Profile</span>
