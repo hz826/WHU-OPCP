@@ -4,8 +4,8 @@
     <el-table :data="users" class="data_table">
         <el-table-column prop="username" label="User name" width="270">
         </el-table-column>
-        <el-table-column prop="id" label="Email" width="180">
-        </el-table-column>
+        <!-- <el-table-column prop="id" label="Email" width="180">
+        </el-table-column> -->
 
         <el-table-column label="Enter" width="180">
             <template slot-scope="scope">

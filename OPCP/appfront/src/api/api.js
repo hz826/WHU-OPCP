@@ -18,6 +18,11 @@ export const GetDescription = (variable) => {
     return axios.get(apiurl)
 }
 
+export const GetProfile = (variable) => {
+    const apiurl = `http://localhost:8000/api/users/${variable}`
+    return axios.get(apiurl)
+}
+
 export const ModifyDescription = (variable, description) => {
     const apiurl = `http://localhost:8000/api/contests/${variable}`
     return axios.patch(apiurl, {'description': description}, {

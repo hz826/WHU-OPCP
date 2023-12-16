@@ -33,7 +33,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="detail" label="Download Details" width="180">
+                <el-table-column prop="detail" label="Download Details" width="270">
                     <template slot-scope="scope">
                         <el-button type="primary" @click="getJudgeDetail(scope.row.detail)" class="enter-button">Details</el-button>
                     </template>

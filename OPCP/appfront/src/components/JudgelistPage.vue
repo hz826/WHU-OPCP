@@ -1,6 +1,6 @@
 <template>
 <div>
-    <h1>Judgelist</h1>
+    <h1>Submission List</h1>
 
     <el-table :data="submissions" class="data_table">
         <el-table-column prop="id" label="Submission Id" width="180">
@@ -9,7 +9,7 @@
         </el-table-column>
         <el-table-column prop="contest" label="Contest" width="180">
         </el-table-column>
-        <el-table-column prop="status" label="Status" width="180">
+        <!-- <el-table-column prop="status" label="Status" width="180">
             <template slot-scope="scope">
                 <div v-if="scope.row.status == 'Waiting'">
                     {{scope.row.status}}
@@ -20,13 +20,13 @@
                     <i class="el-icon-refresh"></i>
                 </div>
                 <div v-else>
-                    {{scope.row.status}}
+                    Finished
                     <i class="el-icon-check"></i>
                 </div>
             </template>
-        </el-table-column>
-        <el-table-column prop="score" label="Score" width="180">
-        </el-table-column>
+        </el-table-column> -->
+        <!-- <el-table-column prop="score" label="Score" width="180">
+        </el-table-column> -->
         <el-table-column label="" width="180">
             <template slot-scope="scope">
                 <el-button type="primary" @click="getCode(scope.row.id)" class="enter-button">Download File</el-button>
