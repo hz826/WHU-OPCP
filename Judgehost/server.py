@@ -64,5 +64,3 @@ while True :
     requests.patch(url+'/api/submissions/{id}'.format(id=sub_id), data=data)
     res = judge(config, 'judge/judger.cpp', [['judge/player1', "cpp_single_gcc_std17"], ['judge/player2', "cpp_single_gcc_std17"]])
     print(res)
-    while True:
-        1
